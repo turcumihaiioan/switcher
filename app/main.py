@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from .config import settings
 from . import __version__
 
 app = FastAPI(
@@ -14,3 +15,7 @@ app = FastAPI(
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
+
+@app.get("/info")
+async def info():
+    return {"settings": settings}
