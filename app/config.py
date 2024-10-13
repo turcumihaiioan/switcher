@@ -14,4 +14,11 @@ class Settings(BaseSettings):
     database_user: str | None = None
     database_password: str | None = None
 
+    @property
+    def database_url(self) -> str:
+        if self.database_type == "sqlite":
+            return f"sqlite:///{self.database_file}"
+        else:
+            raise ValueError(f"Unsupported DATABASE_TYPE: {self.database_type}")
+
 settings = Settings()

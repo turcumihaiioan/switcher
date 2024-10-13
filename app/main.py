@@ -18,4 +18,7 @@ async def root():
 
 @app.get("/info")
 async def info():
-    return {"settings": settings}
+    return {
+        "settings": settings,
+        "database_url": settings.database_url
+        }
