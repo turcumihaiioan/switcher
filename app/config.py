@@ -1,10 +1,11 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         env_ignore_empty=True,
-        extra="ignore"
+        extra="ignore",
         )
     database_type: str | None = None
     database_file: str | None = None
@@ -18,7 +19,6 @@ class Settings(BaseSettings):
     def database_url(self) -> str:
         if self.database_type == "sqlite":
             return f"sqlite:///{self.database_file}"
-        else:
-            raise ValueError(f"Unsupported DATABASE_TYPE: {self.database_type}")
+        raise ValueError(f"Unsupported DATABASE_TYPE: {self.database_type}")
 
 settings = Settings()
