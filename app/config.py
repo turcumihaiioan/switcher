@@ -6,7 +6,7 @@ class Settings(BaseSettings):
         env_file=".env",
         env_ignore_empty=True,
         extra="ignore",
-        )
+    )
     database_type: str | None = None
     database_file: str | None = None
     database_host: str | None = None
@@ -20,5 +20,6 @@ class Settings(BaseSettings):
         if self.database_type == "sqlite":
             return f"sqlite:///{self.database_file}"
         raise ValueError(f"Unsupported DATABASE_TYPE: {self.database_type}")
+
 
 settings = Settings()
