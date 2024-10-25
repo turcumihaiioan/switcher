@@ -7,3 +7,9 @@ class UserBase(SQLModel):
 
 class User(UserBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
+
+class GroupBase(SQLModel):
+    name: str = Field(unique=True, max_length=150)
+
+class Group(GroupBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
