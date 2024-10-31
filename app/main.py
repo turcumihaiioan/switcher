@@ -1,11 +1,12 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 
 from app import __version__
 from app import models
 from app.config import settings
-from app.database import create_db_and_tables
+from app.database import create_db_and_tables, get_session
+from sqlmodel import Session
 
 
 @asynccontextmanager
@@ -36,3 +37,10 @@ async def info():
         "settings": settings,
         "database_url": settings.database_url,
     }
+
+@app.post("/user")
+def create_user(user: models.User, session: Session = Depends(get_session)) -> models.User:
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+    return user
