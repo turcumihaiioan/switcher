@@ -38,9 +38,10 @@ async def info():
         "database_url": settings.database_url,
     }
 
-@app.post("/user")
-def create_user(user: models.User, session: Session = Depends(get_session)) -> models.User:
-    session.add(user)
+@app.post("/user", response_model=models.UserPublic)
+def create_user(*, session: Session = Depends(get_session), user: models.UserCreate):
+    db_user = models.User.model_validate(user)
+    session.add(db_user)
     session.commit()
-    session.refresh(user)
-    return user
+    session.refresh(db_user)
+    return db_user
