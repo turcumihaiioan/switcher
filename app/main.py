@@ -6,7 +6,7 @@ from app import __version__
 from app import models
 from app.config import settings
 from app.database import create_db_and_tables, get_session
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 
 @asynccontextmanager
@@ -45,3 +45,8 @@ def create_user(*, session: Session = Depends(get_session), user: models.UserCre
     session.commit()
     session.refresh(db_user)
     return db_user
+
+@app.get("/user", response_model=list[models.UserPublic])
+def read_user(*, session: Session = Depends(get_session)):
+    users = session.exec(select(models.User)).all()
+    return users
