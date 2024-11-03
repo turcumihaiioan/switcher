@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 
 from app import __version__
 from app import models
@@ -40,6 +40,11 @@ async def info():
 
 @app.post("/user", response_model=models.UserPublic)
 def create_user(*, session: Session = Depends(get_session), user: models.UserCreate):
+    db_user = session.exec(select(models.User).where(models.User.username == user.username )).first()
+    if db_user:
+        raise HTTPException(
+            status_code=400,detail="The user with this username already exists in the system",
+        )
     db_user = models.User.model_validate(user)
     session.add(db_user)
     session.commit()
