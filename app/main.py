@@ -38,18 +38,23 @@ async def info():
         "database_url": settings.database_url,
     }
 
+
 @app.post("/user", response_model=models.UserPublic)
 def create_user(*, session: Session = Depends(get_session), user: models.UserCreate):
-    db_user = session.exec(select(models.User).where(models.User.username == user.username )).first()
+    db_user = session.exec(
+        select(models.User).where(models.User.username == user.username)
+    ).first()
     if db_user:
         raise HTTPException(
-            status_code=400,detail="The user with this username already exists in the system",
+            status_code=400,
+            detail="The user with this username already exists in the system",
         )
     db_user = models.User.model_validate(user)
     session.add(db_user)
     session.commit()
     session.refresh(db_user)
     return db_user
+
 
 @app.get("/user", response_model=list[models.UserPublic])
 def read_user(*, session: Session = Depends(get_session)):
