@@ -41,9 +41,8 @@ async def info():
 
 @app.post("/user", response_model=models.UserPublic)
 def create_user(*, session: Session = Depends(get_session), user: models.UserCreate):
-    db_user = session.exec(
-        select(models.User).where(models.User.username == user.username)
-    ).first()
+    statement = select(models.User).where(models.User.username == user.username)
+    db_user = session.exec(statement).first()
     if db_user:
         raise HTTPException(
             status_code=400,
