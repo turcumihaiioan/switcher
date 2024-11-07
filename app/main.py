@@ -1,12 +1,12 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, HTTPException
 
 from app import __version__
 from app import models
 from app.config import settings
-from app.database import create_db_and_tables, get_session
-from sqlmodel import Session, select
+from app.database import create_db_and_tables, SessionDep
+from sqlmodel import select
 
 
 @asynccontextmanager
@@ -40,7 +40,7 @@ async def info():
 
 
 @app.post("/user", response_model=models.UserPublic)
-def create_user(*, session: Session = Depends(get_session), user: models.UserCreate):
+def create_user(*, session: SessionDep, user: models.UserCreate):
     statement = select(models.User).where(models.User.username == user.username)
     db_user = session.exec(statement).first()
     if db_user:
@@ -56,6 +56,6 @@ def create_user(*, session: Session = Depends(get_session), user: models.UserCre
 
 
 @app.get("/user", response_model=list[models.UserPublic])
-def read_user(*, session: Session = Depends(get_session)):
+def read_user(*, session: SessionDep):
     users = session.exec(select(models.User)).all()
     return users
