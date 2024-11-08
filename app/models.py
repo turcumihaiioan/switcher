@@ -15,6 +15,10 @@ class UserCreate(UserBase):
     pass
 
 
+class UserUpdate(UserBase):
+    name: str | None = Field(default=None, max_length=150)
+
+
 class UserPublic(UserBase):
     id: int
 
