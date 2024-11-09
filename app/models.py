@@ -15,8 +15,9 @@ class UserCreate(UserBase):
     pass
 
 
-class UserUpdate(UserBase):
+class UserUpdate(SQLModel):
     name: str | None = Field(default=None, max_length=150)
+    is_active: bool = True
 
 
 class UserPublic(UserBase):
