@@ -59,3 +59,20 @@ def create_user(*, session: SessionDep, user: models.UserCreate):
 def read_user(*, session: SessionDep):
     users = session.exec(select(models.User)).all()
     return users
+
+
+@app.patch("/user/{user_id}", response_model=models.UserPublic)
+def update_user(*, session: SessionDep, user_id: int, user: models.UserUpdate):
+    db_user = session.get(models.User, user_id)
+    if not db_user:
+        raise HTTPException(
+            status_code=404,
+            detail="The user with this id does not exist in the system",
+        )
+    user_data = user.model_dump(exclude_unset=True)
+    for key, value in user_data.items():
+        setattr(db_user, key, value)
+    session.add(db_user)
+    session.commit()
+    session.refresh(db_user)
+    return db_user
