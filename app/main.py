@@ -76,3 +76,16 @@ def update_user(*, session: SessionDep, user_id: int, user: models.UserUpdate):
     session.commit()
     session.refresh(db_user)
     return db_user
+
+
+@app.delete("/user/{user_id}")
+def delete_user(session: SessionDep, user_id: int):
+    db_user = session.get(models.User, user_id)
+    if not db_user:
+        raise HTTPException(
+            status_code=404,
+            detail="The user with this id does not exist in the system",
+        )
+    session.delete(db_user)
+    session.commit()
+    return {"ok": True}
