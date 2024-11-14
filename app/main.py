@@ -1,17 +1,11 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 
 from app import __version__
-from app.models import (
-    User,
-    UserCreate,
-    UserPublic,
-    UserUpdate,
-)
 from app.config import settings
-from app.database import create_db_and_tables, SessionDep
-from sqlmodel import select
+from app.database import create_db_and_tables
+from app.routers import user
 
 
 @asynccontextmanager
@@ -44,53 +38,4 @@ async def info():
     }
 
 
-@app.post("/user", response_model=UserPublic)
-def create_user(*, session: SessionDep, user: UserCreate):
-    statement = select(User).where(User.username == user.username)
-    db_user = session.exec(statement).first()
-    if db_user:
-        raise HTTPException(
-            status_code=400,
-            detail="The user with this username already exists in the system",
-        )
-    db_user = User.model_validate(user)
-    session.add(db_user)
-    session.commit()
-    session.refresh(db_user)
-    return db_user
-
-
-@app.get("/user", response_model=list[UserPublic])
-def read_user(*, session: SessionDep):
-    users = session.exec(select(User)).all()
-    return users
-
-
-@app.patch("/user/{user_id}", response_model=UserPublic)
-def update_user(*, session: SessionDep, user_id: int, user: UserUpdate):
-    db_user = session.get(User, user_id)
-    if not db_user:
-        raise HTTPException(
-            status_code=404,
-            detail="The user with this id does not exist in the system",
-        )
-    user_data = user.model_dump(exclude_unset=True)
-    for key, value in user_data.items():
-        setattr(db_user, key, value)
-    session.add(db_user)
-    session.commit()
-    session.refresh(db_user)
-    return db_user
-
-
-@app.delete("/user/{user_id}")
-def delete_user(session: SessionDep, user_id: int):
-    db_user = session.get(User, user_id)
-    if not db_user:
-        raise HTTPException(
-            status_code=404,
-            detail="The user with this id does not exist in the system",
-        )
-    session.delete(db_user)
-    session.commit()
-    return {"ok": True}
+app.include_router(user.router, prefix="/user", tags=["user"])
