@@ -12,7 +12,7 @@ from app.models import (
 router = APIRouter()
 
 
-@router.post("/", response_model=UserPublic)
+@router.post("", response_model=UserPublic)
 def create_user(*, session: SessionDep, user: UserCreate):
     statement = select(User).where(User.username == user.username)
     db_user = session.exec(statement).first()
@@ -28,10 +28,21 @@ def create_user(*, session: SessionDep, user: UserCreate):
     return db_user
 
 
-@router.get("/", response_model=list[UserPublic])
+@router.get("", response_model=list[UserPublic])
 def read_user(*, session: SessionDep):
     users = session.exec(select(User)).all()
     return users
+
+
+@router.get("/{user_id}", response_model=UserPublic)
+def read_user_by_id(*, session: SessionDep, user_id: int):
+    db_user = session.get(User, user_id)
+    if not db_user:
+        raise HTTPException(
+            status_code=404,
+            detail="The user with this id does not exist in the system",
+        )
+    return db_user
 
 
 @router.patch("/{user_id}", response_model=UserPublic)
