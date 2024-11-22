@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from sqlmodel import select
 
 from app.database import SessionDep
-from app.models.user import (
+from app.models import (
     User,
     UserCreate,
     UserPublic,
