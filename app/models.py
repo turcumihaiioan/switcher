@@ -1,4 +1,4 @@
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
 
 
 class Group_User(SQLModel, table=True):
@@ -12,6 +12,7 @@ class GroupBase(SQLModel):
 
 class Group(GroupBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
+    users: list["User"] = Relationship(back_populates="groups", link_model=Group_User)
 
 
 class GroupCreate(GroupBase):
@@ -34,6 +35,7 @@ class UserBase(SQLModel):
 
 class User(UserBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
+    groups: list[Group] = Relationship(back_populates="users", link_model=Group_User)
 
 
 class UserCreate(UserBase):
