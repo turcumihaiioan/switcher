@@ -27,6 +27,10 @@ class GroupPublic(GroupBase):
     id: int
 
 
+class GroupPublicWithUsers(GroupPublic):
+    users: list["UserPublic"]
+
+
 class UserBase(SQLModel):
     username: str | None = Field(unique=True, index=True, max_length=150)
     name: str | None = Field(default=None, max_length=150)
@@ -49,3 +53,7 @@ class UserUpdate(SQLModel):
 
 class UserPublic(UserBase):
     id: int
+
+
+class UserPublicWithGroups(UserPublic):
+    groups: list[GroupPublic] = []
