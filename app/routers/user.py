@@ -6,6 +6,7 @@ from app.models import (
     User,
     UserCreate,
     UserPublic,
+    UserPublicWithGroups,
     UserUpdate,
 )
 
@@ -34,7 +35,7 @@ def read_user(*, session: SessionDep):
     return users
 
 
-@router.get("/{user_id}", response_model=UserPublic)
+@router.get("/{user_id}", response_model=UserPublicWithGroups)
 def read_user_by_id(*, session: SessionDep, user_id: int):
     db_user = session.get(User, user_id)
     if not db_user:

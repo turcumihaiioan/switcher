@@ -6,6 +6,7 @@ from app.models import (
     Group,
     GroupCreate,
     GroupPublic,
+    GroupPublicWithUsers,
     GroupUpdate,
 )
 
@@ -34,7 +35,7 @@ def read_group(*, session: SessionDep):
     return groups
 
 
-@router.get("/{group_id}", response_model=GroupPublic)
+@router.get("/{group_id}", response_model=GroupPublicWithUsers)
 def read_group_by_id(*, session: SessionDep, group_id: int):
     db_group = session.get(Group, group_id)
     if not db_group:
