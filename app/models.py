@@ -49,6 +49,7 @@ class UserCreate(UserBase):
 class UserUpdate(SQLModel):
     name: str | None = Field(default=None, max_length=150)
     is_active: bool = True
+    groups: list[int] = []
 
 
 class UserPublic(UserBase):
