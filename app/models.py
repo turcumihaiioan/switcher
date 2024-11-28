@@ -1,11 +1,17 @@
 from sqlmodel import Field, Relationship, SQLModel
 
 
+# group and user link
 class Group_User(SQLModel, table=True):
-    group_id: int | None = Field(default=None, foreign_key="group.id", ondelete="CASCADE", primary_key=True)
-    user_id: int | None = Field(default=None, foreign_key="user.id", ondelete="CASCADE", primary_key=True)
+    group_id: int | None = Field(
+        default=None, foreign_key="group.id", ondelete="CASCADE", primary_key=True
+    )
+    user_id: int | None = Field(
+        default=None, foreign_key="user.id", ondelete="CASCADE", primary_key=True
+    )
 
 
+# group
 class GroupBase(SQLModel):
     name: str = Field(unique=True, index=True, max_length=150)
 
@@ -31,6 +37,7 @@ class GroupPublicWithUsers(GroupPublic):
     users: list["UserPublic"]
 
 
+# user
 class UserBase(SQLModel):
     username: str | None = Field(unique=True, index=True, max_length=150)
     name: str | None = Field(default=None, max_length=150)
