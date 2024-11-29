@@ -56,7 +56,8 @@ def update_user(*, session: SessionDep, user_id: int, user: UserUpdate):
         )
     user_data = user.model_dump(exclude_unset=True)
     for key, value in user_data.items():
-        setattr(db_user, key, value)
+        if key != "groups":
+            setattr(db_user, key, value)
     session.add(db_user)
     session.commit()
     session.refresh(db_user)
