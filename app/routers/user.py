@@ -3,6 +3,7 @@ from sqlmodel import select
 
 from app.database import SessionDep
 from app.models import (
+    Group,
     User,
     UserCreate,
     UserPublic,
@@ -58,6 +59,9 @@ def update_user(*, session: SessionDep, user_id: int, user: UserUpdate):
     for key, value in user_data.items():
         if key != "groups":
             setattr(db_user, key, value)
+        if key == "groups":
+            db_groups = session.exec(select(Group).where(Group.id.in_(value))).all()
+            setattr(db_user, key, db_groups)
     session.add(db_user)
     session.commit()
     session.refresh(db_user)
