@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from sqlmodel import select
+from sqlmodel import col, select
 
 from app.database import SessionDep
 from app.models import (
@@ -58,7 +58,7 @@ def update_user(*, session: SessionDep, user_id: int, user: UserUpdate):
     user_data = user.model_dump(exclude_unset=True)
     for key, value in user_data.items():
         if key == "groups":
-            statement = select(Group).where(Group.id.in_(value))
+            statement = select(Group).where(col(Group.id).in_(value))
             db_groups = session.exec(statement).all()
             setattr(db_user, key, db_groups)
         else:
