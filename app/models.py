@@ -34,7 +34,7 @@ class GroupPublic(GroupBase):
 
 
 class GroupPublicWithUsers(GroupPublic):
-    users: list["UserPublic"]
+    users: list["UserPublic"] = []
 
 
 # user
