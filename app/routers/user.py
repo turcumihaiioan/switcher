@@ -60,6 +60,11 @@ def update_user(*, session: SessionDep, user_id: int, user: UserUpdate):
         if key == "groups":
             statement = select(Group).where(col(Group.id).in_(value))
             db_groups = session.exec(statement).all()
+            if len(db_groups) != len(value):
+                raise HTTPException(
+                    status_code=404,
+                    detail="At least one group id does not exist in the system",
+                )
             setattr(db_user, key, db_groups)
         else:
             setattr(db_user, key, value)
