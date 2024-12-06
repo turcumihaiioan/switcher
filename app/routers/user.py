@@ -58,9 +58,9 @@ def update_user(*, session: SessionDep, user_id: int, user: UserUpdate):
     user_data = user.model_dump(exclude_unset=True)
     for key, value in user_data.items():
         if key == "groups":
-            statement = select(Group).where(col(Group.id).in_(value))
+            statement = select(Group).where(col(Group.id).in_(set(value)))
             db_groups = session.exec(statement).all()
-            if len(db_groups) != len(value):
+            if len(db_groups) != len(set(value)):
                 raise HTTPException(
                     status_code=404,
                     detail="At least one group id does not exist in the system",
