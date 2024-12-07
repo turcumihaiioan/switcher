@@ -61,9 +61,14 @@ def update_user(*, session: SessionDep, user_id: int, user: UserUpdate):
             statement = select(Group).where(col(Group.id).in_(set(value)))
             db_groups = session.exec(statement).all()
             if len(db_groups) != len(set(value)):
+                missing_db_groups=set(value) - set(i.id for i in db_groups)
+                if len(missing_db_groups) == 1:
+                    missing_db_groups_detail="The group with id " + ", ".join(map(str,missing_db_groups)) + " does not exist in the system"
+                else:
+                    missing_db_groups_detail="The groups with ids " + ", ".join(map(str,missing_db_groups)) + " do not exist in the system"
                 raise HTTPException(
                     status_code=404,
-                    detail="At least one group id does not exist in the system",
+                    detail=missing_db_groups_detail,
                 )
             setattr(db_user, key, db_groups)
         else:
