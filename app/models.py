@@ -65,3 +65,9 @@ class UserPublic(UserBase):
 
 class UserPublicWithGroups(UserPublic):
     groups: list[GroupPublic] = []
+
+
+# inventory
+class Inventory(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    name: str = Field(unique=True, index=True, max_length=150)
