@@ -77,3 +77,9 @@ class Inventory(SQLModel, table=True):
 class Venv(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     name: str = Field(unique=True, index=True, max_length=150)
+
+
+# virtual environment package
+class Venv_Package(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    name: str = Field(unique=True, index=True, max_length=150)
