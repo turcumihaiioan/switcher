@@ -74,9 +74,12 @@ class Inventory(SQLModel, table=True):
 
 
 # virtual environment
-class Venv(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+class VenvBase(SQLModel):
     name: str = Field(unique=True, index=True, max_length=150)
+
+
+class Venv(VenvBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
 
 
 # virtual environment package
