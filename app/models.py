@@ -83,6 +83,9 @@ class Venv(VenvBase, table=True):
 
 
 # virtual environment package
-class Venv_Package(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+class Venv_PackageBase(SQLModel):
     name: str = Field(unique=True, index=True, max_length=150)
+
+
+class Venv_Package(Venv_PackageBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
