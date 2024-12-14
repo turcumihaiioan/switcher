@@ -67,6 +67,16 @@ class UserPublicWithGroups(UserPublic):
     groups: list[GroupPublic] = []
 
 
+# repository
+class RepositoryBase(SQLModel):
+    name: str = Field(unique=True, index=True, max_length=150)
+    url: str = Field(unique=True, index=True, max_length=150)
+
+
+class Repository(RepositoryBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+
+
 # inventory
 class Inventory(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
