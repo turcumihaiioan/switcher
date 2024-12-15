@@ -77,6 +77,15 @@ class Repository(RepositoryBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
 
 
+# credential
+class CredentialBase(SQLModel):
+    name: str = Field(unique=True, index=True, max_length=150)
+
+
+class Credential(RepositoryBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+
+
 # inventory
 class Inventory(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
