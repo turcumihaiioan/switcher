@@ -101,6 +101,10 @@ class Venv(VenvBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
 
 
+class VenvPublic(VenvBase):
+    id: int
+
+
 # virtual environment package
 class Venv_PackageBase(SQLModel):
     name: str = Field(unique=True, index=True, max_length=150)
