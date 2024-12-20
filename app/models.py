@@ -101,6 +101,10 @@ class Venv(VenvBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
 
 
+class VenvCreate(VenvBase):
+    pass
+
+
 class VenvPublic(VenvBase):
     id: int
 
