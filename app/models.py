@@ -99,6 +99,7 @@ class VenvBase(SQLModel):
 
 class Venv(VenvBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
+    packages: list["Venv_Package"] = Relationship(back_populates="venv", cascade_delete=True)
 
 
 class VenvCreate(VenvBase):
@@ -116,3 +117,5 @@ class Venv_PackageBase(SQLModel):
 
 class Venv_Package(Venv_PackageBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
+    venv_id: int = Field(foreign_key="venv.id", nullable=False, ondelete="CASCADE")
+    venv: Venv | None = Relationship(back_populates="packages")
