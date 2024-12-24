@@ -110,6 +110,10 @@ class VenvPublic(VenvBase):
     id: int
 
 
+class VenvPublicWithPackages(VenvPublic):
+    packages: list["Venv_PackagePublic"] = []
+
+
 # virtual environment package
 class Venv_PackageBase(SQLModel):
     name: str = Field(unique=True, index=True, max_length=150)
@@ -119,3 +123,7 @@ class Venv_Package(Venv_PackageBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     venv_id: int = Field(foreign_key="venv.id", nullable=False, ondelete="CASCADE")
     venv: Venv | None = Relationship(back_populates="packages")
+
+
+class Venv_PackagePublic(Venv_PackageBase):
+    pass
