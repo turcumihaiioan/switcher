@@ -6,6 +6,7 @@ from app.models import (
     Venv,
     VenvCreate,
     VenvPublic,
+    VenvPublicWithPackages,
 )
 
 router = APIRouter()
@@ -33,7 +34,7 @@ def read_venv(*, session: SessionDep):
     return venvs
 
 
-@router.get("/{venv_id}", response_model=VenvPublic)
+@router.get("/{venv_id}", response_model=VenvPublicWithPackages)
 def read_venv_by_id(*, session: SessionDep, venv_id: int):
     db_venv = session.get(Venv, venv_id)
     if not db_venv:
