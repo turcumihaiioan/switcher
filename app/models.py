@@ -117,6 +117,7 @@ class VenvPublicWithPackages(VenvPublic):
 # virtual environment package
 class Venv_PackageBase(SQLModel):
     name: str = Field(unique=True, index=True, max_length=150)
+    version: str | None = Field(default=None, max_length=150)
 
 
 class Venv_Package(Venv_PackageBase, table=True):
