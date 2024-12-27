@@ -127,4 +127,4 @@ class Venv_Package(Venv_PackageBase, table=True):
 
 
 class Venv_PackagePublic(Venv_PackageBase):
-    pass
+    id: int
