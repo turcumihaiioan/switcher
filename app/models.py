@@ -126,5 +126,9 @@ class Venv_Package(Venv_PackageBase, table=True):
     venv: Venv | None = Relationship(back_populates="packages")
 
 
+class Venv_PackageCreate(Venv_PackageBase):
+    pass
+
+
 class Venv_PackagePublic(Venv_PackageBase):
     id: int
