@@ -108,6 +108,10 @@ class VenvCreate(VenvBase):
     pass
 
 
+class VenvUpdate(SQLModel):
+    name: str = Field(unique=True, index=True, max_length=150)
+
+
 class VenvPublic(VenvBase):
     id: int
 
