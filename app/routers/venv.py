@@ -7,6 +7,7 @@ from app.models import (
     VenvCreate,
     VenvPublic,
     VenvPublicWithPackages,
+    VenvUpdate,
 )
 
 router = APIRouter()
@@ -42,6 +43,23 @@ def read_venv_by_id(*, session: SessionDep, venv_id: int):
             status_code=404,
             detail="The venv with this id does not exist in the system",
         )
+    return db_venv
+
+
+@router.patch("/{venv_id}", response_model=VenvPublic)
+def update_venv(*, session: SessionDep, venv_id: int, venv: VenvUpdate):
+    db_venv = session.get(Venv, venv_id)
+    if not db_venv:
+        raise HTTPException(
+            status_code=404,
+            detail="The venv with this id does not exist in the system",
+        )
+    venv_data = venv.model_dump(exclude_unset=True)
+    for key, value in venv_data.items():
+        setattr(db_venv, key, value)
+    session.add(db_venv)
+    session.commit()
+    session.refresh(db_venv)
     return db_venv
 
 
