@@ -13,7 +13,7 @@ class Group_User(SQLModel, table=True):
 
 # group
 class GroupBase(SQLModel):
-    name: str = Field(unique=True, index=True, max_length=150)
+    name: str = Field(unique=True, index=True, max_length=150, min_length=1)
 
 
 class Group(GroupBase, table=True):
@@ -26,7 +26,7 @@ class GroupCreate(GroupBase):
 
 
 class GroupUpdate(SQLModel):
-    name: str = Field(unique=True, index=True, max_length=150)
+    name: str = Field(unique=True, index=True, max_length=150, min_length=1)
 
 
 class GroupPublic(GroupBase):
@@ -39,8 +39,8 @@ class GroupPublicWithUsers(GroupPublic):
 
 # user
 class UserBase(SQLModel):
-    username: str | None = Field(unique=True, index=True, max_length=150)
-    name: str | None = Field(default=None, max_length=150)
+    username: str | None = Field(unique=True, index=True, max_length=150, min_length=1)
+    name: str | None = Field(default=None, max_length=150, min_length=1)
     is_active: bool = True
 
 
@@ -54,7 +54,7 @@ class UserCreate(UserBase):
 
 
 class UserUpdate(SQLModel):
-    name: str | None = Field(default=None, max_length=150)
+    name: str | None = Field(default=None, max_length=150, min_length=1)
     is_active: bool = True
     groups: list[int] = []
 
@@ -69,8 +69,8 @@ class UserPublicWithGroups(UserPublic):
 
 # repository
 class RepositoryBase(SQLModel):
-    name: str = Field(unique=True, index=True, max_length=150)
-    url: str = Field(unique=True, index=True, max_length=150)
+    name: str = Field(unique=True, index=True, max_length=150, min_length=1)
+    url: str = Field(unique=True, index=True, max_length=150, min_length=1)
 
 
 class Repository(RepositoryBase, table=True):
@@ -79,7 +79,7 @@ class Repository(RepositoryBase, table=True):
 
 # credential
 class CredentialBase(SQLModel):
-    name: str = Field(unique=True, index=True, max_length=150)
+    name: str = Field(unique=True, index=True, max_length=150, min_length=1)
 
 
 class Credential(RepositoryBase, table=True):
@@ -89,12 +89,12 @@ class Credential(RepositoryBase, table=True):
 # inventory
 class Inventory(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    name: str = Field(unique=True, index=True, max_length=150)
+    name: str = Field(unique=True, index=True, max_length=150, min_length=1)
 
 
 # virtual environment
 class VenvBase(SQLModel):
-    name: str = Field(unique=True, index=True, max_length=150)
+    name: str = Field(unique=True, index=True, max_length=150, min_length=1)
 
 
 class Venv(VenvBase, table=True):
@@ -109,7 +109,7 @@ class VenvCreate(VenvBase):
 
 
 class VenvUpdate(SQLModel):
-    name: str = Field(unique=True, index=True, max_length=150)
+    name: str = Field(unique=True, index=True, max_length=150, min_length=1)
 
 
 class VenvPublic(VenvBase):
@@ -122,8 +122,8 @@ class VenvPublicWithPackages(VenvPublic):
 
 # virtual environment package
 class Venv_PackageBase(SQLModel):
-    name: str = Field(unique=True, index=True, max_length=150)
-    version: str | None = Field(default=None, max_length=150)
+    name: str = Field(unique=True, index=True, max_length=150, min_length=1)
+    version: str | None = Field(default=None, max_length=150, min_length=1)
 
 
 class Venv_Package(Venv_PackageBase, table=True):
