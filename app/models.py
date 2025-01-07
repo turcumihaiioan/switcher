@@ -138,3 +138,4 @@ class Venv_PackageCreate(Venv_PackageBase):
 
 class Venv_PackagePublic(Venv_PackageBase):
     id: int
+    venv_id: int | None
