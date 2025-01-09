@@ -1,5 +1,7 @@
 FROM python:alpine
 
+ENV PYTHONUNBUFFERED=1
+
 WORKDIR /code
 
 COPY ./requirements.txt /code/requirements.txt
