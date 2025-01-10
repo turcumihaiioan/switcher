@@ -6,6 +6,12 @@
 
 ---
 
+## Build a container image using a Containerfile
+
+```bash
+podman build --tag switcher .
+```
+
 ## License
 
 switcher is licensed under the [GNU General Public License v3.0 or later](LICENSE)
