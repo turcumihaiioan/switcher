@@ -6,10 +6,17 @@
 
 ---
 
-## Build a container image using a Containerfile
+## Installing switcher
+
+### Build a container image using a Containerfile
 
 ```bash
 podman build --tag switcher .
+```
+### Run the container
+
+```bash
+podman container run --detach --env-file .env --name switcher --publish 8000:8000 localhost/switcher:latest
 ```
 
 ## License
