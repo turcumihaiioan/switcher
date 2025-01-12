@@ -124,6 +124,7 @@ class VenvPublicWithPackages(VenvPublic):
 class Venv_PackageBase(SQLModel):
     name: str = Field(index=True, max_length=150, min_length=1)
     version: str | None = Field(default=None, max_length=150)
+    venv_id: int | None
 
 
 class Venv_Package(Venv_PackageBase, table=True):
@@ -138,4 +139,3 @@ class Venv_PackageCreate(Venv_PackageBase):
 
 class Venv_PackagePublic(Venv_PackageBase):
     id: int
-    venv_id: int | None
