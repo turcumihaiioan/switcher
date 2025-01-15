@@ -1,4 +1,4 @@
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship, SQLModel, UniqueConstraint
 
 
 # group and user link
@@ -128,6 +128,7 @@ class Venv_PackageBase(SQLModel):
 
 
 class Venv_Package(Venv_PackageBase, table=True):
+    __table_args__ = (UniqueConstraint("name", "venv_id"),)
     id: int | None = Field(default=None, primary_key=True)
     venv: Venv | None = Relationship(back_populates="packages")
     venv_id: int = Field(foreign_key="venv.id", nullable=False, ondelete="CASCADE")
