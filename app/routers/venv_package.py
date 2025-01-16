@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from sqlmodel import select
 
 from app.database import SessionDep
@@ -13,6 +13,13 @@ router = APIRouter()
 
 @router.post("", response_model=Venv_PackagePublic)
 def create_venv_package(*, session: SessionDep, venv_package: Venv_PackageCreate):
+    statement = select(Venv_Package).where(Venv_Package.name == venv_package.name, Venv_Package.venv_id == venv_package.venv_id )
+    db_venv_package = session.exec(statement).first()
+    if db_venv_package:
+        raise HTTPException(
+            status_code=400,
+            detail="The venv package with this name and venv_id already exists in the system",
+        )
     db_venv_package = Venv_Package.model_validate(venv_package)
     session.add(db_venv_package)
     session.commit()
