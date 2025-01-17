@@ -3,6 +3,7 @@ from sqlmodel import select
 
 from app.database import SessionDep
 from app.models import (
+    Venv,
     Venv_Package,
     Venv_PackageCreate,
     Venv_PackagePublic,
@@ -19,6 +20,13 @@ def create_venv_package(*, session: SessionDep, venv_package: Venv_PackageCreate
         raise HTTPException(
             status_code=400,
             detail="The venv package with this name and venv_id already exists in the system",
+        )
+    statement = select(Venv).where(Venv.id  == venv_package.venv_id)
+    db_venv = session.exec(statement).first()
+    if not db_venv:
+        raise HTTPException(
+            status_code=400,
+            detail="The venv with this id(venv_id) does not exist in the system",
         )
     db_venv_package = Venv_Package.model_validate(venv_package)
     session.add(db_venv_package)
