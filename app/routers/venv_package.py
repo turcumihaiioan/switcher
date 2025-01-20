@@ -7,6 +7,7 @@ from app.models import (
     Venv_Package,
     Venv_PackageCreate,
     Venv_PackagePublic,
+    Venv_PackagePublicWithVenv,
 )
 
 router = APIRouter()
@@ -39,3 +40,14 @@ def create_venv_package(*, session: SessionDep, venv_package: Venv_PackageCreate
 def read_venv_package(*, session: SessionDep):
     venv_packages = session.exec(select(Venv_Package)).all()
     return venv_packages
+
+
+@router.get("/{venv_package_id}", response_model=Venv_PackagePublicWithVenv)
+def read_user_by_id(*, session: SessionDep, venv_package_id: int):
+    db_venv_package = session.get(Venv_Package, venv_package_id)
+    if not db_venv_package:
+        raise HTTPException(
+            status_code=404,
+            detail="The venv package with this id does not exist in the system",
+        )
+    return db_venv_package
