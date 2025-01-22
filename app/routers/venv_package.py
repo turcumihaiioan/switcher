@@ -43,7 +43,7 @@ def read_venv_package(*, session: SessionDep):
 
 
 @router.get("/{venv_package_id}", response_model=Venv_PackagePublicWithVenv)
-def read_user_by_id(*, session: SessionDep, venv_package_id: int):
+def read_venv_package_by_id(*, session: SessionDep, venv_package_id: int):
     db_venv_package = session.get(Venv_Package, venv_package_id)
     if not db_venv_package:
         raise HTTPException(
