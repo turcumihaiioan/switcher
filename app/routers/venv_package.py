@@ -51,3 +51,16 @@ def read_venv_package_by_id(*, session: SessionDep, venv_package_id: int):
             detail="The venv package with this id does not exist in the system",
         )
     return db_venv_package
+
+
+@router.delete("/{venv_package_id}")
+def delete_venv_package(session: SessionDep, venv_package_id: int):
+    db_venv_package = session.get(Venv_Package, venv_package_id)
+    if not db_venv_package:
+        raise HTTPException(
+            status_code=404,
+            detail="The venv package with this id does not exist in the system",
+        )
+    session.delete(db_venv_package)
+    session.commit()
+    return {"ok": True}
