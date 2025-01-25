@@ -137,6 +137,11 @@ class Venv_PackageCreate(Venv_PackageBase):
     venv_id: int | None
 
 
+class Venv_PackageUpdate(SQLModel):
+    name: str | None = Field(default=None, max_length=150, min_length=1)
+    version: str | None = Field(default=None, max_length=150)
+
+
 class Venv_PackagePublic(Venv_PackageBase):
     id: int
 
