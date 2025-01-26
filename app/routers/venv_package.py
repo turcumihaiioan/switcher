@@ -8,6 +8,7 @@ from app.models import (
     Venv_PackageCreate,
     Venv_PackagePublic,
     Venv_PackagePublicWithVenv,
+    Venv_PackageUpdate,
 )
 
 router = APIRouter()
@@ -50,6 +51,23 @@ def read_venv_package_by_id(*, session: SessionDep, venv_package_id: int):
             status_code=404,
             detail="The venv package with this id does not exist in the system",
         )
+    return db_venv_package
+
+
+@router.patch("/{venv_package_id}", response_model=Venv_PackagePublic)
+def update_venv_package(*, session: SessionDep, venv_package_id: int, venv_package: Venv_PackageUpdate):
+    db_venv_package = session.get(Venv_Package, venv_package_id)
+    if not db_venv_package:
+        raise HTTPException(
+            status_code=404,
+            detail="The venv package with this id does not exist in the system",
+        )
+    venv_package_data = venv_package.model_dump(exclude_unset=True)
+    for key, value in venv_package_data.items():
+        setattr(db_venv_package, key, value)
+    session.add(db_venv_package)
+    session.commit()
+    session.refresh(db_venv_package)
     return db_venv_package
 
 
