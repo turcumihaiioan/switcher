@@ -16,14 +16,17 @@ router = APIRouter()
 
 @router.post("", response_model=Venv_PackagePublic)
 def create_venv_package(*, session: SessionDep, venv_package: Venv_PackageCreate):
-    statement = select(Venv_Package).where(Venv_Package.name == venv_package.name, Venv_Package.venv_id == venv_package.venv_id )
+    statement = select(Venv_Package).where(
+        Venv_Package.name == venv_package.name,
+        Venv_Package.venv_id == venv_package.venv_id,
+    )
     db_venv_package = session.exec(statement).first()
     if db_venv_package:
         raise HTTPException(
             status_code=400,
             detail="The venv package with this name and venv_id already exists in the system",
         )
-    statement = select(Venv).where(Venv.id  == venv_package.venv_id)
+    statement = select(Venv).where(Venv.id == venv_package.venv_id)
     db_venv = session.exec(statement).first()
     if not db_venv:
         raise HTTPException(
@@ -55,7 +58,9 @@ def read_venv_package_by_id(*, session: SessionDep, venv_package_id: int):
 
 
 @router.patch("/{venv_package_id}", response_model=Venv_PackagePublic)
-def update_venv_package(*, session: SessionDep, venv_package_id: int, venv_package: Venv_PackageUpdate):
+def update_venv_package(
+    *, session: SessionDep, venv_package_id: int, venv_package: Venv_PackageUpdate
+):
     db_venv_package = session.get(Venv_Package, venv_package_id)
     if not db_venv_package:
         raise HTTPException(

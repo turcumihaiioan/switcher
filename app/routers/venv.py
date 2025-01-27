@@ -65,7 +65,7 @@ def update_venv(*, session: SessionDep, venv_id: int, venv: VenvUpdate):
 
 @router.delete("/{venv_id}")
 def delete_venv(session: SessionDep, venv_id: int):
-    db_venv= session.get(Venv, venv_id)
+    db_venv = session.get(Venv, venv_id)
     if not db_venv:
         raise HTTPException(
             status_code=404,
