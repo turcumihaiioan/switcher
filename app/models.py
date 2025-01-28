@@ -77,6 +77,10 @@ class Repository(RepositoryBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
 
 
+class RepositoryPublic(RepositoryBase):
+    id: int
+
+
 # credential
 class CredentialBase(SQLModel):
     name: str = Field(index=True, max_length=150, min_length=1, unique=True)
