@@ -77,6 +77,10 @@ class Repository(RepositoryBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
 
 
+class RepositoryCreate(RepositoryBase):
+    pass
+
+
 class RepositoryPublic(RepositoryBase):
     id: int
 
