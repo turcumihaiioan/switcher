@@ -4,10 +4,27 @@ from sqlmodel import select
 from app.database import SessionDep
 from app.models import (
     Repository,
+    RepositoryCreate,
     RepositoryPublic,
 )
 
 router = APIRouter()
+
+
+@router.post("", response_model=RepositoryPublic)
+def create_repository(*, session: SessionDep, repository: RepositoryCreate):
+    statement = select(Repository).where(Repository.name == repository.name)
+    db_repository = session.exec(statement).first()
+    if db_repository:
+        raise HTTPException(
+            status_code=400,
+            detail="The repository with this name already exists in the system",
+        )
+    db_repository = Repository.model_validate(repository)
+    session.add(db_repository)
+    session.commit()
+    session.refresh(db_repository)
+    return db_repository
 
 
 @router.get("", response_model=list[RepositoryPublic])
