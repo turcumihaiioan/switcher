@@ -81,6 +81,11 @@ class RepositoryCreate(RepositoryBase):
     pass
 
 
+class RepositoryUpdate(SQLModel):
+    name: str | None = Field(default=None, max_length=150, min_length=1, unique=True)
+    url: str | None = Field(default=None, max_length=150, min_length=1, unique=True)
+
+
 class RepositoryPublic(RepositoryBase):
     id: int
 
