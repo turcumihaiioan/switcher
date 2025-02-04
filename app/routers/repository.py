@@ -6,6 +6,7 @@ from app.models import (
     Repository,
     RepositoryCreate,
     RepositoryPublic,
+    RepositoryUpdate,
 )
 
 router = APIRouter()
@@ -41,4 +42,23 @@ def read_repository_by_id(*, session: SessionDep, repository_id: int):
             status_code=404,
             detail="The repository with this id does not exist in the system",
         )
+    return db_repository
+
+
+@router.patch("/{repository_id}", response_model=RepositoryPublic)
+def update_repository(
+    *, session: SessionDep, repository_id: int, repository: RepositoryUpdate
+):
+    db_repository = session.get(Repository, repository_id)
+    if not db_repository:
+        raise HTTPException(
+            status_code=404,
+            detail="The repository with this id does not exist in the system",
+        )
+    repository_data = repository.model_dump(exclude_unset=True)
+    for key, value in repository_data.items():
+        setattr(db_repository, key, value)
+    session.add(db_repository)
+    session.commit()
+    session.refresh(db_repository)
     return db_repository
