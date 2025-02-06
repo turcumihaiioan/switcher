@@ -70,7 +70,7 @@ class UserPublicWithGroups(UserPublic):
 # repository
 class RepositoryBase(SQLModel):
     name: str = Field(index=True, max_length=150, min_length=1, unique=True)
-    url: str = Field(index=True, max_length=150, min_length=1, unique=True)
+    url: str = Field(index=True, max_length=150, min_length=1)
 
 
 class Repository(RepositoryBase, table=True):
@@ -83,7 +83,7 @@ class RepositoryCreate(RepositoryBase):
 
 class RepositoryUpdate(SQLModel):
     name: str | None = Field(default=None, max_length=150, min_length=1, unique=True)
-    url: str | None = Field(default=None, max_length=150, min_length=1, unique=True)
+    url: str | None = Field(default=None, max_length=150, min_length=1)
 
 
 class RepositoryPublic(RepositoryBase):
