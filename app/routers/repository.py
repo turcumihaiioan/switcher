@@ -71,3 +71,16 @@ def update_repository(
     session.commit()
     session.refresh(db_repository)
     return db_repository
+
+
+@router.delete("/{repository_id}")
+def delete_repository(session: SessionDep, repository_id: int):
+    db_repository = session.get(Repository, repository_id)
+    if not db_repository:
+        raise HTTPException(
+            status_code=404,
+            detail="The repository with this id does not exist in the system",
+        )
+    session.delete(db_repository)
+    session.commit()
+    return {"ok": True}
