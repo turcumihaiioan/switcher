@@ -99,6 +99,10 @@ class Credential(RepositoryBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
 
 
+class CredentialPublic(CredentialBase):
+    id: int
+
+
 # inventory
 class Inventory(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
