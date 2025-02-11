@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from app import __version__
 from app.config import settings
 from app.database import create_db_and_tables
-from app.routers import user, group, venv, venv_package, repository
+from app.routers import user, group, venv, venv_package, repository, credential
 
 
 @asynccontextmanager
@@ -38,3 +38,4 @@ app.include_router(group.router, prefix="/group", tags=["group"])
 app.include_router(venv.router, prefix="/venv", tags=["venv"])
 app.include_router(venv_package.router, prefix="/venv_package", tags=["venv_package"])
 app.include_router(repository.router, prefix="/repository", tags=["repository"])
+app.include_router(credential.router, prefix="/credential", tags=["credential"])
