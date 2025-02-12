@@ -95,7 +95,7 @@ class CredentialBase(SQLModel):
     name: str = Field(index=True, max_length=150, min_length=1, unique=True)
 
 
-class Credential(RepositoryBase, table=True):
+class Credential(CredentialBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
 
 
