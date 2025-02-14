@@ -99,6 +99,10 @@ class Credential(CredentialBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
 
 
+class CredentialCreate(CredentialBase):
+    pass
+
+
 class CredentialPublic(CredentialBase):
     id: int
 
