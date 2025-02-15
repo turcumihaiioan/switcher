@@ -4,10 +4,27 @@ from sqlmodel import select
 from app.database import SessionDep
 from app.models import (
     Credential,
-    CredentialPublic
+    CredentialCreate,
+    CredentialPublic,
 )
 
 router = APIRouter()
+
+
+@router.post("", response_model=CredentialPublic)
+def create_credential(*, session: SessionDep, credential: CredentialCreate):
+    statement = select(Credential).where(Credential.name == credential.name)
+    db_credential = session.exec(statement).first()
+    if db_credential:
+        raise HTTPException(
+            status_code=400,
+            detail="The credential with this name already exists in the system",
+        )
+    db_credential = Credential.model_validate(credential)
+    session.add(db_credential)
+    session.commit()
+    session.refresh(db_credential)
+    return db_credential
 
 
 @router.get("", response_model=list[CredentialPublic])
