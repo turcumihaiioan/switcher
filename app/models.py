@@ -107,6 +107,10 @@ class CredentialPublic(CredentialBase):
     id: int
 
 
+class CredentialUpdate(SQLModel):
+    name: str | None = Field(default=None, max_length=150, min_length=1, unique=True)
+
+
 # inventory
 class Inventory(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
