@@ -71,3 +71,16 @@ def update_credential(
     session.commit()
     session.refresh(db_credential)
     return db_credential
+
+
+@router.delete("/{credential_id}")
+def delete_credential(session: SessionDep, credential_id: int):
+    db_credential = session.get(Credential, credential_id)
+    if not db_credential:
+        raise HTTPException(
+            status_code=404,
+            detail="The credential with this id does not exist in the system",
+        )
+    session.delete(db_credential)
+    session.commit()
+    return {"ok": True}
