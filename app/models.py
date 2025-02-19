@@ -112,9 +112,16 @@ class CredentialUpdate(SQLModel):
 
 
 # inventory
-class Inventory(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+class InventoryBase(SQLModel):
     name: str = Field(index=True, max_length=150, min_length=1, unique=True)
+
+
+class Inventory(InventoryBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+
+
+class InventoryPublic(InventoryBase):
+    id: int
 
 
 # virtual environment
