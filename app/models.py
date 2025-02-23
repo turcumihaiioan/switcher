@@ -120,6 +120,10 @@ class Inventory(InventoryBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
 
 
+class InventoryCreate(InventoryBase):
+    pass
+
+
 class InventoryPublic(InventoryBase):
     id: int
 
