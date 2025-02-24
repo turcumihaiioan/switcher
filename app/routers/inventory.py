@@ -4,10 +4,27 @@ from sqlmodel import select
 from app.database import SessionDep
 from app.models import (
     Inventory,
-    InventoryPublic
+    InventoryCreate,
+    InventoryPublic,
 )
 
 router = APIRouter()
+
+
+@router.post("", response_model=InventoryPublic)
+def create_inventory(*, session: SessionDep, inventory: InventoryCreate):
+    statement = select(Inventory).where(Inventory.name == inventory.name)
+    db_inventory = session.exec(statement).first()
+    if db_inventory:
+        raise HTTPException(
+            status_code=400,
+            detail="The inventory with this name already exists in the system",
+        )
+    db_inventory = Inventory.model_validate(inventory)
+    session.add(db_inventory)
+    session.commit()
+    session.refresh(db_inventory)
+    return db_inventory
 
 
 @router.get("", response_model=list[InventoryPublic])
