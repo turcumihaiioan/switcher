@@ -128,6 +128,10 @@ class InventoryPublic(InventoryBase):
     id: int
 
 
+class InventoryUpdate(SQLModel):
+    name: str = Field(index=True, max_length=150, min_length=1, unique=True)
+
+
 # virtual environment
 class VenvBase(SQLModel):
     name: str = Field(index=True, max_length=150, min_length=1, unique=True)
