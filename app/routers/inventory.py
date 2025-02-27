@@ -71,3 +71,16 @@ def update_inventory(
     session.commit()
     session.refresh(db_inventory)
     return db_inventory
+
+
+@router.delete("/{inventory_id}")
+def delete_inventory(session: SessionDep, inventory_id: int):
+    db_inventory = session.get(Inventory, inventory_id)
+    if not db_inventory:
+        raise HTTPException(
+            status_code=404,
+            detail="The inventory with this id does not exist in the system",
+        )
+    session.delete(db_inventory)
+    session.commit()
+    return {"ok": True}
