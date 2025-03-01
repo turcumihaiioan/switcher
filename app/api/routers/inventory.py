@@ -58,14 +58,16 @@ def update_inventory(
     inventory_data = inventory.model_dump(exclude_unset=True)
     for key, value in inventory_data.items():
         if key == "name":
-          statement = select(Inventory).where(Inventory.id != inventory_id, Inventory.name == value)
-          db_inventory_name = session.exec(statement).first()
-          print (db_inventory_name)
-          if db_inventory_name:
-            raise HTTPException(
-                status_code=404,
-                detail="The inventory with this name already exists in the system",
+            statement = select(Inventory).where(
+                Inventory.id != inventory_id, Inventory.name == value
             )
+            db_inventory_name = session.exec(statement).first()
+            print(db_inventory_name)
+            if db_inventory_name:
+                raise HTTPException(
+                    status_code=404,
+                    detail="The inventory with this name already exists in the system",
+                )
         setattr(db_inventory, key, value)
     session.add(db_inventory)
     session.commit()

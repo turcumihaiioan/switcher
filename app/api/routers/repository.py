@@ -58,14 +58,16 @@ def update_repository(
     repository_data = repository.model_dump(exclude_unset=True)
     for key, value in repository_data.items():
         if key == "name":
-          statement = select(Repository).where(Repository.id != repository_id, Repository.name == value)
-          db_repository_name = session.exec(statement).first()
-          print (db_repository_name)
-          if db_repository_name:
-            raise HTTPException(
-                status_code=404,
-                detail="The repository with this name already exists in the system",
+            statement = select(Repository).where(
+                Repository.id != repository_id, Repository.name == value
             )
+            db_repository_name = session.exec(statement).first()
+            print(db_repository_name)
+            if db_repository_name:
+                raise HTTPException(
+                    status_code=404,
+                    detail="The repository with this name already exists in the system",
+                )
         setattr(db_repository, key, value)
     session.add(db_repository)
     session.commit()

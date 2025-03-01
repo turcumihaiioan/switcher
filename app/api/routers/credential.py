@@ -58,14 +58,16 @@ def update_credential(
     credential_data = credential.model_dump(exclude_unset=True)
     for key, value in credential_data.items():
         if key == "name":
-          statement = select(Credential).where(Credential.id != credential_id, Credential.name == value)
-          db_credential_name = session.exec(statement).first()
-          print (db_credential_name)
-          if db_credential_name:
-            raise HTTPException(
-                status_code=404,
-                detail="The credential with this name already exists in the system",
+            statement = select(Credential).where(
+                Credential.id != credential_id, Credential.name == value
             )
+            db_credential_name = session.exec(statement).first()
+            print(db_credential_name)
+            if db_credential_name:
+                raise HTTPException(
+                    status_code=404,
+                    detail="The credential with this name already exists in the system",
+                )
         setattr(db_credential, key, value)
     session.add(db_credential)
     session.commit()
