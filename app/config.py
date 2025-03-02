@@ -1,3 +1,4 @@
+from pydantic import computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -15,6 +16,7 @@ class Settings(BaseSettings):
     database_user: str | None = None
     database_password: str | None = None
 
+    @computed_field
     @property
     def database_url(self) -> str:
         if self.database_type == "sqlite":
