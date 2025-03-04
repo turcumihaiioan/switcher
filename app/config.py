@@ -16,11 +16,25 @@ class Settings(BaseSettings):
     database_user: str | None = None
     database_password: str | None = None
 
+    data_dir: str = "data"
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def venv_dir(self) -> str:
+        return f"{self.data_dir}/venvs"
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def db_dir(self) -> str | None:
+        if self.database_type == "sqlite":
+            return f"{self.data_dir}/db"
+        return None
+
     @computed_field  # type: ignore[prop-decorator]
     @property
     def database_url(self) -> str:
         if self.database_type == "sqlite":
-            return f"sqlite:///{self.database_file}"
+            return f"sqlite:///{self.db_dir}/{self.database_file}"
         raise ValueError(f"Unsupported DATABASE_TYPE: {self.database_type}")
 
 
