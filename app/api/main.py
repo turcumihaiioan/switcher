@@ -19,7 +19,6 @@ router = APIRouter()
 async def info():
     return {
         "settings": settings,
-        "database_url": settings.database_url,
     }
 
 
