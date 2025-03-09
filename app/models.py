@@ -1,3 +1,5 @@
+import uuid
+
 from sqlmodel import Field, Relationship, SQLModel, UniqueConstraint
 
 
@@ -138,7 +140,7 @@ class VenvBase(SQLModel):
 
 
 class Venv(VenvBase, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     packages: list["Venv_Package"] = Relationship(
         back_populates="venv", cascade_delete=True
     )
@@ -153,7 +155,7 @@ class VenvUpdate(SQLModel):
 
 
 class VenvPublic(VenvBase):
-    id: int
+    id: uuid.UUID
 
 
 class VenvPublicWithPackages(VenvPublic):
@@ -168,13 +170,15 @@ class Venv_PackageBase(SQLModel):
 
 class Venv_Package(Venv_PackageBase, table=True):
     __table_args__ = (UniqueConstraint("name", "venv_id"),)
-    id: int | None = Field(default=None, primary_key=True)
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     venv: Venv = Relationship(back_populates="packages")
-    venv_id: int = Field(foreign_key="venv.id", nullable=False, ondelete="CASCADE")
+    venv_id: uuid.UUID = Field(
+        foreign_key="venv.id", nullable=False, ondelete="CASCADE"
+    )
 
 
 class Venv_PackageCreate(Venv_PackageBase):
-    venv_id: int | None
+    venv_id: uuid.UUID
 
 
 class Venv_PackageUpdate(SQLModel):
@@ -183,7 +187,7 @@ class Venv_PackageUpdate(SQLModel):
 
 
 class Venv_PackagePublic(Venv_PackageBase):
-    id: int
+    id: uuid.UUID
 
 
 class Venv_PackagePublicWithVenv(Venv_PackagePublic):
