@@ -1,3 +1,5 @@
+import uuid
+
 from fastapi import APIRouter, HTTPException
 from sqlmodel import select
 
@@ -47,7 +49,7 @@ def read_venv_package(*, session: SessionDep):
 
 
 @router.get("/{venv_package_id}", response_model=Venv_PackagePublicWithVenv)
-def read_venv_package_by_id(*, session: SessionDep, venv_package_id: int):
+def read_venv_package_by_id(*, session: SessionDep, venv_package_id: uuid.UUID):
     db_venv_package = session.get(Venv_Package, venv_package_id)
     if not db_venv_package:
         raise HTTPException(
@@ -59,7 +61,7 @@ def read_venv_package_by_id(*, session: SessionDep, venv_package_id: int):
 
 @router.patch("/{venv_package_id}", response_model=Venv_PackagePublic)
 def update_venv_package(
-    *, session: SessionDep, venv_package_id: int, venv_package: Venv_PackageUpdate
+    *, session: SessionDep, venv_package_id: uuid.UUID, venv_package: Venv_PackageUpdate
 ):
     db_venv_package = session.get(Venv_Package, venv_package_id)
     if not db_venv_package:
@@ -77,7 +79,7 @@ def update_venv_package(
 
 
 @router.delete("/{venv_package_id}")
-def delete_venv_package(session: SessionDep, venv_package_id: int):
+def delete_venv_package(session: SessionDep, venv_package_id: uuid.UUID):
     db_venv_package = session.get(Venv_Package, venv_package_id)
     if not db_venv_package:
         raise HTTPException(
