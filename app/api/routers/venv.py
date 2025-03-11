@@ -1,3 +1,5 @@
+import uuid
+
 from fastapi import APIRouter, HTTPException
 from sqlmodel import select
 
@@ -10,11 +12,12 @@ from app.models import (
     VenvUpdate,
 )
 
+
 router = APIRouter()
 
 
 @router.post("", response_model=VenvPublic)
-def create_venv(*, session: SessionDep, venv: VenvCreate):
+async def create_venv(*, session: SessionDep, venv: VenvCreate):
     statement = select(Venv).where(Venv.name == venv.name)
     db_venv = session.exec(statement).first()
     if db_venv:
@@ -36,7 +39,7 @@ def read_venv(*, session: SessionDep):
 
 
 @router.get("/{venv_id}", response_model=VenvPublicWithPackages)
-def read_venv_by_id(*, session: SessionDep, venv_id: int):
+def read_venv_by_id(*, session: SessionDep, venv_id: uuid.UUID):
     db_venv = session.get(Venv, venv_id)
     if not db_venv:
         raise HTTPException(
@@ -47,7 +50,7 @@ def read_venv_by_id(*, session: SessionDep, venv_id: int):
 
 
 @router.patch("/{venv_id}", response_model=VenvPublic)
-def update_venv(*, session: SessionDep, venv_id: int, venv: VenvUpdate):
+def update_venv(*, session: SessionDep, venv_id: uuid.UUID, venv: VenvUpdate):
     db_venv = session.get(Venv, venv_id)
     if not db_venv:
         raise HTTPException(
@@ -64,7 +67,7 @@ def update_venv(*, session: SessionDep, venv_id: int, venv: VenvUpdate):
 
 
 @router.delete("/{venv_id}")
-def delete_venv(session: SessionDep, venv_id: int):
+def delete_venv(session: SessionDep, venv_id: uuid.UUID):
     db_venv = session.get(Venv, venv_id)
     if not db_venv:
         raise HTTPException(
