@@ -1,8 +1,10 @@
+import subprocess
 import uuid
 
 from fastapi import APIRouter, HTTPException
 from sqlmodel import select
 
+from app.config import settings
 from app.database import SessionDep
 from app.models import (
     Venv,
@@ -27,6 +29,24 @@ async def create_venv(*, session: SessionDep, venv: VenvCreate):
         )
     db_venv = Venv.model_validate(venv)
     session.add(db_venv)
+    try:
+        subprocess.run(
+            [
+                "python",
+                "-m",
+                "venv",
+                "--upgrade-deps",
+                f"{settings.venv_dir}/{db_venv.id}",
+            ],
+            capture_output=True,
+            check=True,
+            text=True,
+        )
+    except subprocess.CalledProcessError as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"The subprocess encountered an error :\n{e.stderr}",
+        )
     session.commit()
     session.refresh(db_venv)
     return db_venv
