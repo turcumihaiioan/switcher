@@ -95,5 +95,17 @@ def delete_venv(session: SessionDep, venv_id: uuid.UUID):
             detail="The venv with this id does not exist in the system",
         )
     session.delete(db_venv)
+    try:
+        subprocess.run(
+            ["rm", "-r", "-f", f"{settings.venv_dir}/{db_venv.id}"],
+            capture_output=True,
+            check=True,
+            text=True,
+        )
+    except subprocess.CalledProcessError as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"The subprocess encountered an error :\n{e.stderr}",
+        )
     session.commit()
     return {"ok": True}
