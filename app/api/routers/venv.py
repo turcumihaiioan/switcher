@@ -12,6 +12,7 @@ from app.models import (
     VenvPublic,
     VenvPublicWithPackages,
     VenvUpdate,
+    Venv_Package,
 )
 
 
@@ -108,4 +109,47 @@ def delete_venv(session: SessionDep, venv_id: uuid.UUID):
             detail=f"The subprocess encountered an error :\n{e.stderr}",
         )
     session.commit()
+    return {"ok": True}
+
+
+@router.post("/{venv_id}/install")
+def install_venv_by_id(*, session: SessionDep, venv_id: uuid.UUID):
+    db_venv = session.get(Venv, venv_id)
+    if not db_venv:
+        raise HTTPException(
+            status_code=404,
+            detail="The venv with this id does not exist in the system",
+        )
+    statement = select(Venv_Package).where(Venv_Package.venv_id == venv_id)
+    db_venv_package = session.exec(statement).all()
+    if len(db_venv_package) == 0:
+        raise HTTPException(
+            status_code=404,
+            detail="The venv with this id does not have any packages to install",
+        )
+    db_venv_packages = []
+    for item in db_venv_package:
+        if item.version is not None:
+            db_venv_packages.append(f"{item.name}=={item.version}")
+        else:
+            db_venv_packages.append(f"{item.name}")
+    try:
+        subprocess.run(
+            [
+                f"{settings.venv_dir}/{db_venv.id}/bin/python",
+                "-m",
+                "pip",
+                "install",
+                "--no-cache-dir",
+            ]
+            + db_venv_packages,
+            capture_output=True,
+            check=True,
+            text=True,
+        )
+    except subprocess.CalledProcessError as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"The subprocess encountered an error :\n{e.stderr}",
+        )
     return {"ok": True}
