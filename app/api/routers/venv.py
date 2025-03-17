@@ -153,3 +153,33 @@ def install_venv_by_id(*, session: SessionDep, venv_id: uuid.UUID):
             detail=f"The subprocess encountered an error :\n{e.stderr}",
         )
     return {"ok": True}
+
+
+@router.post("/{venv_id}/uninstall")
+def uninstall_venv_by_id(*, session: SessionDep, venv_id: uuid.UUID):
+    db_venv = session.get(Venv, venv_id)
+    if not db_venv:
+        raise HTTPException(
+            status_code=404,
+            detail="The venv with this id does not exist in the system",
+        )
+    try:
+        subprocess.run(
+            [
+                "python",
+                "-m",
+                "venv",
+                "--clear",
+                "--upgrade-deps",
+                f"{settings.venv_dir}/{db_venv.id}",
+            ],
+            capture_output=True,
+            check=True,
+            text=True,
+        )
+    except subprocess.CalledProcessError as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"The subprocess encountered an error :\n{e.stderr}",
+        )
+    return {"ok": True}
