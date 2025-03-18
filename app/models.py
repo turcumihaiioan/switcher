@@ -165,7 +165,13 @@ class VenvPublicWithPackages(VenvPublic):
 # virtual environment package
 class Venv_PackageBase(SQLModel):
     name: str = Field(index=True, max_length=150, min_length=1)
-    version: str | None = Field(default=None, max_length=32, schema_extra=dict(pattern=r'^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?(\.post(0|[1-9][0-9]*))?(\.dev(0|[1-9][0-9]*))?$'))
+    version: str | None = Field(
+        default=None,
+        max_length=32,
+        schema_extra=dict(
+            pattern=r"^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?(\.post(0|[1-9][0-9]*))?(\.dev(0|[1-9][0-9]*))?$"
+        ),
+    )
 
 
 class Venv_Package(Venv_PackageBase, table=True):
@@ -183,7 +189,13 @@ class Venv_PackageCreate(Venv_PackageBase):
 
 class Venv_PackageUpdate(SQLModel):
     name: str | None = Field(default=None, max_length=150, min_length=1)
-    version: str | None = Field(default=None, max_length=32, schema_extra=dict(pattern=r'^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?(\.post(0|[1-9][0-9]*))?(\.dev(0|[1-9][0-9]*))?$'))
+    version: str | None = Field(
+        default=None,
+        max_length=32,
+        schema_extra=dict(
+            pattern=r"^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?(\.post(0|[1-9][0-9]*))?(\.dev(0|[1-9][0-9]*))?$"
+        ),
+    )
 
 
 class Venv_PackagePublic(Venv_PackageBase):
