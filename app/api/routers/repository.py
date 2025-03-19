@@ -62,7 +62,6 @@ def update_repository(
                 Repository.id != repository_id, Repository.name == value
             )
             db_repository_name = session.exec(statement).first()
-            print(db_repository_name)
             if db_repository_name:
                 raise HTTPException(
                     status_code=404,

@@ -98,7 +98,7 @@ def delete_venv(session: SessionDep, venv_id: uuid.UUID):
     session.delete(db_venv)
     try:
         subprocess.run(
-            ["rm", "-r", "-f", f"{settings.venv_dir}/{db_venv.id}"],
+            ["rm", "--force", "--recursive", f"{settings.venv_dir}/{db_venv.id}"],
             capture_output=True,
             check=True,
             text=True,

@@ -62,7 +62,6 @@ def update_credential(
                 Credential.id != credential_id, Credential.name == value
             )
             db_credential_name = session.exec(statement).first()
-            print(db_credential_name)
             if db_credential_name:
                 raise HTTPException(
                     status_code=404,

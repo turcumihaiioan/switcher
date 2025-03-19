@@ -62,7 +62,6 @@ def update_inventory(
                 Inventory.id != inventory_id, Inventory.name == value
             )
             db_inventory_name = session.exec(statement).first()
-            print(db_inventory_name)
             if db_inventory_name:
                 raise HTTPException(
                     status_code=404,
