@@ -76,7 +76,7 @@ class RepositoryBase(SQLModel):
 
 
 class Repository(RepositoryBase, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
 
 
 class RepositoryCreate(RepositoryBase):
@@ -89,7 +89,7 @@ class RepositoryUpdate(SQLModel):
 
 
 class RepositoryPublic(RepositoryBase):
-    id: int
+    id: uuid.UUID
 
 
 # credential
