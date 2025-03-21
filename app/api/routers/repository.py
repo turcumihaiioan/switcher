@@ -1,3 +1,5 @@
+import uuid
+
 from fastapi import APIRouter, HTTPException
 from sqlmodel import select
 
@@ -35,7 +37,7 @@ def read_repository(*, session: SessionDep):
 
 
 @router.get("/{repository_id}", response_model=RepositoryPublic)
-def read_repository_by_id(*, session: SessionDep, repository_id: int):
+def read_repository_by_id(*, session: SessionDep, repository_id: uuid.UUID):
     db_repository = session.get(Repository, repository_id)
     if not db_repository:
         raise HTTPException(
@@ -47,7 +49,7 @@ def read_repository_by_id(*, session: SessionDep, repository_id: int):
 
 @router.patch("/{repository_id}", response_model=RepositoryPublic)
 def update_repository(
-    *, session: SessionDep, repository_id: int, repository: RepositoryUpdate
+    *, session: SessionDep, repository_id: uuid.UUID, repository: RepositoryUpdate
 ):
     db_repository = session.get(Repository, repository_id)
     if not db_repository:
@@ -75,7 +77,7 @@ def update_repository(
 
 
 @router.delete("/{repository_id}")
-def delete_repository(session: SessionDep, repository_id: int):
+def delete_repository(session: SessionDep, repository_id: uuid.UUID):
     db_repository = session.get(Repository, repository_id)
     if not db_repository:
         raise HTTPException(
