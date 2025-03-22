@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     @computed_field  # type: ignore[prop-decorator]
     @property
     def venv_dir(self) -> str:
-        return f"{self.data_dir}/venvs"
+        return f"{self.data_dir}/venv"
 
     @computed_field  # type: ignore[prop-decorator]
     @property
