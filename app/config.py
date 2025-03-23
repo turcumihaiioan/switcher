@@ -28,6 +28,11 @@ class Settings(BaseSettings):
 
     @computed_field  # type: ignore[prop-decorator]
     @property
+    def repository_dir(self) -> str:
+        return f"{self.data_dir}/repository"
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
     def db_dir(self) -> str | None:
         if self.database_type == "sqlite":
             return f"{self.data_dir}/db"
@@ -49,6 +54,9 @@ def create_directories():
 
     DATA_DIR = Path(BASE_DIR) / settings.data_dir
     os.makedirs(DATA_DIR, exist_ok=True)
+
+    REPOSITORY_DIR = Path(BASE_DIR) / settings.repository_dir
+    os.makedirs(REPOSITORY_DIR, exist_ok=True)
 
     VENV_DIR = Path(BASE_DIR) / settings.venv_dir
     os.makedirs(VENV_DIR, exist_ok=True)
