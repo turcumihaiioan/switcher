@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 
 from pydantic import computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -50,16 +49,10 @@ settings = Settings()
 
 
 def create_directories():
-    BASE_DIR = Path(__file__).parent.parent
+    os.makedirs(f"{settings.data_dir}", exist_ok=True)
 
-    DATA_DIR = Path(BASE_DIR) / settings.data_dir
-    os.makedirs(DATA_DIR, exist_ok=True)
+    os.makedirs(f"{settings.repository_dir}", exist_ok=True)
 
-    REPOSITORY_DIR = Path(BASE_DIR) / settings.repository_dir
-    os.makedirs(REPOSITORY_DIR, exist_ok=True)
-
-    VENV_DIR = Path(BASE_DIR) / settings.venv_dir
-    os.makedirs(VENV_DIR, exist_ok=True)
+    os.makedirs(f"{settings.venv_dir}", exist_ok=True)
     if settings.db_dir is not None:
-        DB_DIR = Path(BASE_DIR) / settings.db_dir
-        os.makedirs(DB_DIR, exist_ok=True)
+        os.makedirs(f"{settings.db_dir}", exist_ok=True)
