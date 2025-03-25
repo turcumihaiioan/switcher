@@ -46,7 +46,7 @@ async def create_venv(*, session: SessionDep, venv: VenvCreate):
     except subprocess.CalledProcessError as e:
         raise HTTPException(
             status_code=500,
-            detail=f"The subprocess encountered an error :\n{e.stderr}",
+            detail=f"The subprocess module encountered an error :\n{e.stderr}",
         )
     session.commit()
     session.refresh(db_venv)
@@ -106,7 +106,7 @@ def delete_venv(session: SessionDep, venv_id: uuid.UUID):
     except subprocess.CalledProcessError as e:
         raise HTTPException(
             status_code=500,
-            detail=f"The subprocess encountered an error :\n{e.stderr}",
+            detail=f"The subprocess module encountered an error :\n{e.stderr}",
         )
     session.commit()
     return {"ok": True}
@@ -150,7 +150,7 @@ def install_venv_by_id(*, session: SessionDep, venv_id: uuid.UUID):
     except subprocess.CalledProcessError as e:
         raise HTTPException(
             status_code=500,
-            detail=f"The subprocess encountered an error :\n{e.stderr}",
+            detail=f"The subprocess module encountered an error :\n{e.stderr}",
         )
     return {"ok": True}
 
@@ -180,6 +180,6 @@ def uninstall_venv_by_id(*, session: SessionDep, venv_id: uuid.UUID):
     except subprocess.CalledProcessError as e:
         raise HTTPException(
             status_code=500,
-            detail=f"The subprocess encountered an error :\n{e.stderr}",
+            detail=f"The subprocess module encountered an error :\n{e.stderr}",
         )
     return {"ok": True}
