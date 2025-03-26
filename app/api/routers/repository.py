@@ -1,8 +1,10 @@
+import os
 import uuid
 
 from fastapi import APIRouter, HTTPException
 from sqlmodel import select
 
+from app.config import settings
 from app.database import SessionDep
 from app.models import (
     Repository,
@@ -24,7 +26,15 @@ def create_repository(*, session: SessionDep, repository: RepositoryCreate):
             detail="The repository with this name already exists in the system",
         )
     db_repository = Repository.model_validate(repository)
+
     session.add(db_repository)
+    try:
+        os.makedirs(f"{settings.repository_dir}/{db_repository.id}")
+    except OSError as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"The os module encountered an error :\n{e.strerror}",
+        )
     session.commit()
     session.refresh(db_repository)
     return db_repository
