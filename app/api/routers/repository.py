@@ -1,4 +1,5 @@
 import os
+import subprocess
 import uuid
 
 from fastapi import APIRouter, HTTPException
@@ -95,5 +96,22 @@ def delete_repository(session: SessionDep, repository_id: uuid.UUID):
             detail="The repository with this id does not exist in the system",
         )
     session.delete(db_repository)
+    try:
+        subprocess.run(
+            [
+                "rm",
+                "--force",
+                "--recursive",
+                f"{settings.repository_dir}/{db_repository.id}",
+            ],
+            capture_output=True,
+            check=True,
+            text=True,
+        )
+    except subprocess.CalledProcessError as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"The subprocess module encountered an error :\n{e.stderr}",
+        )
     session.commit()
     return {"ok": True}
