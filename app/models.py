@@ -77,10 +77,14 @@ class RepositoryBase(SQLModel):
 
 class Repository(RepositoryBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    venv_id: uuid.UUID = Field(
+        foreign_key="venv.id", nullable=False, ondelete="RESTRICT"
+    )
+    venv: "Venv" = Relationship(back_populates="repositories")
 
 
 class RepositoryCreate(RepositoryBase):
-    pass
+    venv_id: uuid.UUID
 
 
 class RepositoryUpdate(SQLModel):
@@ -143,6 +147,9 @@ class Venv(VenvBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     packages: list["Venv_Package"] = Relationship(
         back_populates="venv", cascade_delete=True
+    )
+    repositories: list["Repository"] = Relationship(
+        back_populates="venv", passive_deletes="all"
     )
 
 
