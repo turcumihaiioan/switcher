@@ -12,6 +12,7 @@ from app.models import (
     RepositoryCreate,
     RepositoryPublic,
     RepositoryUpdate,
+    Venv,
 )
 
 router = APIRouter()
@@ -26,8 +27,13 @@ def create_repository(*, session: SessionDep, repository: RepositoryCreate):
             status_code=400,
             detail="The repository with this name already exists in the system",
         )
+    db_venv = session.get(Venv, repository.venv_id)
+    if not db_venv:
+        raise HTTPException(
+            status_code=400,
+            detail="The venv with this id(venv_id) does not exist in the system",
+        )
     db_repository = Repository.model_validate(repository)
-
     session.add(db_repository)
     try:
         os.makedirs(f"{settings.repository_dir}/{db_repository.id}")
