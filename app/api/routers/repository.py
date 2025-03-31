@@ -11,6 +11,7 @@ from app.models import (
     Repository,
     RepositoryCreate,
     RepositoryPublic,
+    RepositoryPublicWithLinks,
     RepositoryUpdate,
     Venv,
 )
@@ -53,7 +54,7 @@ def read_repository(*, session: SessionDep):
     return repositories
 
 
-@router.get("/{repository_id}", response_model=RepositoryPublic)
+@router.get("/{repository_id}", response_model=RepositoryPublicWithLinks)
 def read_repository_by_id(*, session: SessionDep, repository_id: uuid.UUID):
     db_repository = session.get(Repository, repository_id)
     if not db_repository:
@@ -64,7 +65,7 @@ def read_repository_by_id(*, session: SessionDep, repository_id: uuid.UUID):
     return db_repository
 
 
-@router.patch("/{repository_id}", response_model=RepositoryPublic)
+@router.patch("/{repository_id}", response_model=RepositoryPublicWithLinks)
 def update_repository(
     *, session: SessionDep, repository_id: uuid.UUID, repository: RepositoryUpdate
 ):
