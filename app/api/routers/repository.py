@@ -87,6 +87,13 @@ def update_repository(
                     status_code=404,
                     detail="The repository with this name already exists in the system",
                 )
+        if key == 'venv_id':
+            db_venv = session.get(Venv, value)
+            if not db_venv:
+                raise HTTPException(
+                    status_code=400,
+                    detail="The venv with this id(venv_id) does not exist in the system",
+                )
         setattr(db_repository, key, value)
     session.add(db_repository)
     session.commit()
