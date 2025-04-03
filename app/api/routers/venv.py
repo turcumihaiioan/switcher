@@ -95,6 +95,24 @@ def delete_venv(session: SessionDep, venv_id: uuid.UUID):
             status_code=404,
             detail="The venv with this id does not exist in the system",
         )
+    if db_venv.repositories:
+        repository_names = set(str(i.id) for i in db_venv.repositories)
+        if len(repository_names) == 1:
+            links_repositories_detail = (
+                "The repository with id "
+                + ", ".join(repository_names)
+                + " is linked to this venv"
+            )
+        else:
+            links_repositories_detail = (
+                "The repositories with ids "
+                + ", ".join(repository_names)
+                + " are linked to this venv"
+            )
+        raise HTTPException(
+            status_code=409,
+            detail=links_repositories_detail,
+        )
     session.delete(db_venv)
     try:
         subprocess.run(
