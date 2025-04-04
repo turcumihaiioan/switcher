@@ -174,6 +174,11 @@ class VenvPublicWithPackages(VenvPublic):
     packages: list["Venv_PackagePublic"] = []
 
 
+class VenvPublicWithLinks(VenvPublic):
+    packages: list["Venv_PackagePublic"] = []
+    repositories: list["RepositoryPublic"] = []
+
+
 # virtual environment package
 class Venv_PackageBase(SQLModel):
     name: str = Field(index=True, max_length=64, min_length=1)
