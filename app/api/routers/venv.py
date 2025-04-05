@@ -10,7 +10,7 @@ from app.models import (
     Venv,
     VenvCreate,
     VenvPublic,
-    VenvPublicWithPackages,
+    VenvPublicWithLinks,
     VenvUpdate,
     Venv_Package,
 )
@@ -59,7 +59,7 @@ def read_venv(*, session: SessionDep):
     return venvs
 
 
-@router.get("/{venv_id}", response_model=VenvPublicWithPackages)
+@router.get("/{venv_id}", response_model=VenvPublicWithLinks)
 def read_venv_by_id(*, session: SessionDep, venv_id: uuid.UUID):
     db_venv = session.get(Venv, venv_id)
     if not db_venv:
