@@ -170,10 +170,6 @@ class VenvPublic(VenvBase):
     id: uuid.UUID
 
 
-class VenvPublicWithPackages(VenvPublic):
-    packages: list["Venv_PackagePublic"] = []
-
-
 class VenvPublicWithLinks(VenvPublic):
     packages: list["Venv_PackagePublic"] = []
     repositories: list["RepositoryPublic"] = []
