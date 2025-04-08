@@ -129,3 +129,14 @@ def delete_repository(session: SessionDep, repository_id: uuid.UUID):
         )
     session.commit()
     return {"ok": True}
+
+
+@router.post("/{repository_id}/install")
+def install_repository_by_id(*, session: SessionDep, repository_id: uuid.UUID):
+    db_repository = session.get(Repository, repository_id)
+    if not db_repository:
+        raise HTTPException(
+            status_code=404,
+            detail="The repository with this id does not exist in the system",
+        )
+    return {"ok": True}
