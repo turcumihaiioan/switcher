@@ -14,6 +14,7 @@ from app.models import (
     RepositoryPublicWithLinks,
     RepositoryUpdate,
     Venv,
+    Venv_Package,
 )
 
 router = APIRouter()
@@ -138,5 +139,14 @@ def install_repository_by_id(*, session: SessionDep, repository_id: uuid.UUID):
         raise HTTPException(
             status_code=404,
             detail="The repository with this id does not exist in the system",
+        )
+    statement = select(Venv_Package.name).where(
+        Venv_Package.venv_id == db_repository.venv_id
+    )
+    db_venv_packages = session.exec(statement).all()
+    if len(db_venv_packages) == 0:
+        raise HTTPException(
+            status_code=404,
+            detail="The linked venv does not have any packages",
         )
     return {"ok": True}
