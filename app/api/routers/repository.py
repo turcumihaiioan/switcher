@@ -149,4 +149,9 @@ def install_repository_by_id(*, session: SessionDep, repository_id: uuid.UUID):
             status_code=404,
             detail="The linked venv does not have any packages",
         )
+    if "ansible" not in db_venv_packages:
+        raise HTTPException(
+            status_code=404,
+            detail="The linked venv does not have the ansible package",
+        )
     return {"ok": True}
