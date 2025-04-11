@@ -154,4 +154,25 @@ def install_repository_by_id(*, session: SessionDep, repository_id: uuid.UUID):
             status_code=404,
             detail="The linked venv does not have the ansible package",
         )
+    try:
+        subprocess_run = subprocess.run(
+            [
+                f"{settings.venv_dir}/{db_repository.venv_id}/bin/ansible",
+                "--connection",
+                "local",
+                "--module-name",
+                "ansible.builtin.git",
+                "--args",
+                f"dest={settings.repository_dir}/{db_repository.id} repo={db_repository.url}",
+                "localhost",
+            ],
+            capture_output=True,
+            check=True,
+            text=True,
+        )
+    except subprocess.CalledProcessError as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"The subprocess module encountered an error :\n{e.stderr}",
+        )
     return {"ok": True}
