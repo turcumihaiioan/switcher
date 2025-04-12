@@ -170,6 +170,11 @@ def install_repository_by_id(*, session: SessionDep, repository_id: uuid.UUID):
             check=True,
             text=True,
         )
+    except FileNotFoundError:
+        raise HTTPException(
+            status_code=500,
+            detail="The ansible package is not installed in the venv",
+        )
     except subprocess.CalledProcessError as e:
         raise HTTPException(
             status_code=500,
