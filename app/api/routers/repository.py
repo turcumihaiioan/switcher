@@ -88,7 +88,7 @@ def update_repository(
                     status_code=404,
                     detail="The repository with this name already exists in the system",
                 )
-        if key == 'venv_id':
+        if key == "venv_id":
             db_venv = session.get(Venv, value)
             if not db_venv:
                 raise HTTPException(
@@ -155,7 +155,7 @@ def install_repository_by_id(*, session: SessionDep, repository_id: uuid.UUID):
             detail="The linked venv does not have the ansible package",
         )
     try:
-        subprocess_run = subprocess.run(
+        subprocess.run(
             [
                 f"{settings.venv_dir}/{db_repository.venv_id}/bin/ansible",
                 "--connection",
@@ -175,6 +175,36 @@ def install_repository_by_id(*, session: SessionDep, repository_id: uuid.UUID):
             status_code=500,
             detail="The ansible package is not installed in the venv",
         )
+    except subprocess.CalledProcessError as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"The subprocess module encountered an error :\n{e.stderr}",
+        )
+    return {"ok": True}
+
+
+@router.post("/{repository_id}/uninstall")
+def uninstall_repository_by_id(*, session: SessionDep, repository_id: uuid.UUID):
+    db_repository = session.get(Repository, repository_id)
+    if not db_repository:
+        raise HTTPException(
+            status_code=404,
+            detail="The repository with this id does not exist in the system",
+        )
+    try:
+        asd = subprocess.run(
+            [
+                "find",
+                f"{settings.repository_dir}/{db_repository.id}",
+                "-mindepth",
+                "1",
+                "-delete",
+            ],
+            capture_output=True,
+            check=True,
+            text=True,
+        )
+        print(asd.stdout)
     except subprocess.CalledProcessError as e:
         raise HTTPException(
             status_code=500,
