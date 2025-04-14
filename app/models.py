@@ -69,6 +69,15 @@ class UserPublicWithGroups(UserPublic):
     groups: list[GroupPublic] = []
 
 
+# journal
+class JournalBase(SQLModel):
+    unit_id: uuid.UUID = Field(nullable=False)
+
+
+class Journal(JournalBase, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+
+
 # repository
 class RepositoryBase(SQLModel):
     name: str = Field(index=True, max_length=128, min_length=1, unique=True)
