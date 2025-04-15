@@ -78,6 +78,10 @@ class Journal(JournalBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
 
 
+class JournalCreate(JournalBase):
+    pass
+
+
 # repository
 class RepositoryBase(SQLModel):
     name: str = Field(index=True, max_length=128, min_length=1, unique=True)
