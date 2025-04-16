@@ -82,6 +82,10 @@ class JournalCreate(JournalBase):
     pass
 
 
+class JournalPublic(JournalBase):
+    id: uuid.UUID
+
+
 # repository
 class RepositoryBase(SQLModel):
     name: str = Field(index=True, max_length=128, min_length=1, unique=True)
