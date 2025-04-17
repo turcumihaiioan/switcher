@@ -1,3 +1,4 @@
+from datetime import datetime
 import uuid
 
 from sqlmodel import Field, Relationship, SQLModel, UniqueConstraint
@@ -84,6 +85,15 @@ class JournalCreate(JournalBase):
 
 class JournalPublic(JournalBase):
     id: uuid.UUID
+
+
+class Journal_MessageBase(SQLModel):
+    message: str
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+
+class Journal_Message(Journal_MessageBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
 
 
 # repository
