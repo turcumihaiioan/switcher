@@ -77,6 +77,9 @@ class JournalBase(SQLModel):
 
 class Journal(JournalBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    messages: list["Journal_Message"] = Relationship(
+        back_populates="journal", cascade_delete=True
+    )
 
 
 class JournalCreate(JournalBase):
@@ -94,6 +97,10 @@ class Journal_MessageBase(SQLModel):
 
 class Journal_Message(Journal_MessageBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
+    journal: Journal = Relationship(back_populates="messages")
+    journal_id: uuid.UUID = Field(
+        foreign_key="journal.id", nullable=False, ondelete="CASCADE"
+    )
 
 
 # repository
