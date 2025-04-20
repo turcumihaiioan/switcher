@@ -90,6 +90,10 @@ class JournalPublic(JournalBase):
     id: uuid.UUID
 
 
+class JournalPublicWithMessages(JournalPublic):
+    messages: list["Journal_MessagePublic"] = []
+
+
 class Journal_MessageBase(SQLModel):
     message: str
     timestamp: datetime = Field(default_factory=datetime.utcnow)
@@ -101,6 +105,10 @@ class Journal_Message(Journal_MessageBase, table=True):
     journal_id: uuid.UUID = Field(
         foreign_key="journal.id", nullable=False, ondelete="CASCADE"
     )
+
+
+class Journal_MessagePublic(Journal_MessageBase):
+    pass
 
 
 # repository
