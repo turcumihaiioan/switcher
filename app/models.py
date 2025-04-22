@@ -119,10 +119,10 @@ class RepositoryBase(SQLModel):
 
 class Repository(RepositoryBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    venv: "Venv" = Relationship(back_populates="repositories")
     venv_id: uuid.UUID = Field(
         foreign_key="venv.id", nullable=False, ondelete="RESTRICT"
     )
-    venv: "Venv" = Relationship(back_populates="repositories")
 
 
 class RepositoryCreate(RepositoryBase):
