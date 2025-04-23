@@ -10,6 +10,7 @@ from app.api.routers import (
     inventory,
     venv,
     venv_package,
+    journal,
 )
 
 router = APIRouter()
@@ -31,3 +32,4 @@ router.include_router(venv.router, prefix="/venv", tags=["venv"])
 router.include_router(
     venv_package.router, prefix="/venv_package", tags=["venv_package"]
 )
+router.include_router(journal.router, prefix="/journal", tags=["journal"])
