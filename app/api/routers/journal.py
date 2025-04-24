@@ -29,3 +29,9 @@ def read_journal_by_id(*, session: SessionDep, journal_id: uuid.UUID):
             detail="The journal with this id does not exist in the system",
         )
     return db_journal
+
+
+@router.get("/unit/{unit_id}", response_model=list[JournalPublic])
+def read_journal_by_unit_id(*, session: SessionDep, unit_id: uuid.UUID):
+    journals = session.exec(select(Journal).where(Journal.unit_id == unit_id)).all()
+    return journals
