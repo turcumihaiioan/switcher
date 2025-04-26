@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     database_db: str | None = None
     database_user: str | None = None
     database_password: str | None = None
+    database_echo: bool | None = False
 
     data_dir: str = "data"
 
