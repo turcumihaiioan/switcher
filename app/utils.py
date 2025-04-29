@@ -10,4 +10,4 @@ def create_journal(*, session: Session, journal: JournalCreate):
     session.add(db_journal)
     session.commit()
     session.refresh(db_journal)
-    return db_journal
+    return db_journal.id
