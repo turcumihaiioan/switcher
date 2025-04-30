@@ -217,6 +217,12 @@ class VenvPublicWithLinks(VenvPublic):
     repositories: list["RepositoryPublic"] = []
 
 
+class VenvPublicWithJournal(SQLModel):
+    name: str
+    id: uuid.UUID
+    journal_id: uuid.UUID
+
+
 # virtual environment package
 class Venv_PackageBase(SQLModel):
     name: str = Field(index=True, max_length=64, min_length=1)
