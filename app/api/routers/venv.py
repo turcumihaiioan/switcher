@@ -7,19 +7,22 @@ from sqlmodel import select
 from app.config import settings
 from app.database import SessionDep
 from app.models import (
+    JournalCreate,
     Venv,
     VenvCreate,
     VenvPublic,
+    VenvPublicWithJournal,
     VenvPublicWithLinks,
     VenvUpdate,
     Venv_Package,
 )
+from app import utils
 
 
 router = APIRouter()
 
 
-@router.post("", response_model=VenvPublic)
+@router.post("", response_model=VenvPublicWithJournal)
 async def create_venv(*, session: SessionDep, venv: VenvCreate):
     statement = select(Venv).where(Venv.name == venv.name)
     db_venv = session.exec(statement).first()
@@ -30,6 +33,9 @@ async def create_venv(*, session: SessionDep, venv: VenvCreate):
         )
     db_venv = Venv.model_validate(venv)
     session.add(db_venv)
+    db_journal_id = utils.create_journal(
+        session=session, journal=(JournalCreate(unit_id=db_venv.id))
+    )
     try:
         subprocess.run(
             [
@@ -50,7 +56,10 @@ async def create_venv(*, session: SessionDep, venv: VenvCreate):
         )
     session.commit()
     session.refresh(db_venv)
-    return db_venv
+    db_venv_journal = VenvPublicWithJournal(
+        name=db_venv.name, id=db_venv.id, journal_id=db_journal_id
+    )
+    return db_venv_journal
 
 
 @router.get("", response_model=list[VenvPublic])
