@@ -1,0 +1,12 @@
+---
+- name: venv playbook
+  connection: local
+  gather_facts: true
+  hosts: localhost
+  tasks:
+    - name: creating venv
+      ansible.builtin.shell: |
+        {{ ansible_python_interpreter }}
+        -m venv
+        --upgrade-deps {{ venv_directory }}
+      tags: venv_install
