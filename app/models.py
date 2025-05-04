@@ -107,6 +107,10 @@ class Journal_Message(Journal_MessageBase, table=True):
     )
 
 
+class Journal_MessageCreate(Journal_MessageBase):
+    journal_id: uuid.UUID
+
+
 class Journal_MessagePublic(Journal_MessageBase):
     pass
 
