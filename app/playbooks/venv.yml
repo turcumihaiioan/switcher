@@ -1,7 +1,7 @@
 ---
 - name: venv playbook
   connection: local
-  gather_facts: true
+  gather_facts: false
   hosts: localhost
   tasks:
     - name: creating venv
