@@ -22,10 +22,7 @@ def create_journal(*, session: Session, journal: JournalCreate):
 def create_journal_message(*, session: Session, journal_message: Journal_MessageCreate):
     db_journal = session.get(Journal, journal_message.journal_id)
     if not db_journal:
-        raise HTTPException(
-            status_code=400,
-            detail="The journal with this id does not exists in the system",
-        )
+        raise Exception(f"The journal with this id does not exist in the system: {journal_message.journal_id}")
     db_journal_message = Journal_Message.model_validate(journal_message)
     session.add(db_journal_message)
     session.commit()
@@ -35,14 +32,17 @@ def run_ansible_playbook(
     *,
     session=Session,
     playbook: str,
-    playbook_options: dict,
+    options: dict,
     journal_id: uuid.UUID,
 ):
     command = ["ansible-playbook"]
-    for key, value in playbook_options.items():
+    for key, value in options.items():
         if key == "extra_vars":
             command.append("--extra-vars")
             command.append(f"{value}")
+        if key == "inventory":
+            command.append("--inventory")
+            command.append(value)
         if key == "tags":
             command.append("--tags")
             command.append(value)
@@ -56,8 +56,11 @@ def run_ansible_playbook(
             bufsize=1,
         )
     except Exception as e:
-        print(f"The subprocess module encountered an error :\n{e}")
+        print(f"The subprocess module encountered an error:\n{e}")
         return
     if process.stdout is not None:
         for line in iter(process.stdout.readline, ""):
             print(line.rstrip())
+    process.stdout.close()
+    return_code = process.wait()
+    print(f"The subprocess module finished with return code: {return_code}")
