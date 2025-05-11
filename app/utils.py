@@ -1,7 +1,6 @@
 import uuid
 import subprocess
 
-from fastapi import HTTPException
 from sqlmodel import Session
 from app.models import (
     Journal,
@@ -22,7 +21,9 @@ def create_journal(*, session: Session, journal: JournalCreate):
 def create_journal_message(*, session: Session, journal_message: Journal_MessageCreate):
     db_journal = session.get(Journal, journal_message.journal_id)
     if not db_journal:
-        raise Exception(f"The journal with this id does not exist in the system: {journal_message.journal_id}")
+        raise Exception(
+            f"The journal with this id does not exist in the system: {journal_message.journal_id}"
+        )
     db_journal_message = Journal_Message.model_validate(journal_message)
     session.add(db_journal_message)
     session.commit()
@@ -60,7 +61,18 @@ def run_ansible_playbook(
         return
     if process.stdout is not None:
         for line in iter(process.stdout.readline, ""):
-            print(line.rstrip())
-    process.stdout.close()
+            try:
+                create_journal_message(
+                    session=session,
+                    journal_message=(
+                        Journal_MessageCreate(
+                            journal_id=journal_id, message=line.rstrip()
+                        )
+                    ),
+                )
+            except Exception as e:
+                print(f"The create_journal_message function encountered an error:\n{e}")
+                return
+        process.stdout.close()
     return_code = process.wait()
     print(f"The subprocess module finished with return code: {return_code}")
