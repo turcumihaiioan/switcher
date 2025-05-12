@@ -1,5 +1,6 @@
 import uuid
 import subprocess
+import json
 
 from sqlmodel import Session
 from app.models import (
@@ -10,7 +11,7 @@ from app.models import (
 )
 
 
-def create_journal(*, session: Session, journal: JournalCreate):
+def create_journal(*, session: Session, journal: JournalCreate) -> uuid.UUID:
     db_journal = Journal.model_validate(journal)
     session.add(db_journal)
     session.commit()
@@ -18,7 +19,9 @@ def create_journal(*, session: Session, journal: JournalCreate):
     return db_journal.id
 
 
-def create_journal_message(*, session: Session, journal_message: Journal_MessageCreate):
+def create_journal_message(
+    *, session: Session, journal_message: Journal_MessageCreate
+) -> None:
     db_journal = session.get(Journal, journal_message.journal_id)
     if not db_journal:
         raise Exception(
@@ -35,18 +38,15 @@ def run_ansible_playbook(
     playbook: str,
     options: dict,
     journal_id: uuid.UUID,
-):
+) -> None:
     command = ["ansible-playbook"]
     for key, value in options.items():
         if key == "extra_vars":
-            command.append("--extra-vars")
-            command.append(f"{value}")
+            command.extend(["--extra-vars", json.dumps(value)])
         if key == "inventory":
-            command.append("--inventory")
-            command.append(value)
+            command.extend(["--inventory", value])
         if key == "tags":
-            command.append("--tags")
-            command.append(value)
+            command.extend(["--tags", value])
     command.append(playbook)
     try:
         process = subprocess.Popen(
@@ -57,7 +57,7 @@ def run_ansible_playbook(
             bufsize=1,
         )
     except Exception as e:
-        print(f"The subprocess module encountered an error:\n{e}")
+        print(f"The run_ansible_playbook subprocess module encountered an error:\n{e}")
         return
     if process.stdout is not None:
         for line in iter(process.stdout.readline, ""):
@@ -75,4 +75,6 @@ def run_ansible_playbook(
                 return
         process.stdout.close()
     return_code = process.wait()
-    print(f"The subprocess module finished with return code: {return_code}")
+    print(
+        f"The run_ansible_playbook subprocess module finished with return code: {return_code}"
+    )
