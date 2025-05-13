@@ -3,10 +3,12 @@
   connection: local
   gather_facts: false
   hosts: localhost
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
   tasks:
     - name: creating venv
       ansible.builtin.shell: >
         {{ ansible_python_interpreter }}
         -m venv
         --upgrade-deps {{ venv_directory }}
-      tags: venv_install
+      tags: create
