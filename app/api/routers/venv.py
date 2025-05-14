@@ -1,7 +1,8 @@
 import subprocess
 import uuid
+from pathlib import Path
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, BackgroundTasks, HTTPException
 from sqlmodel import select
 
 from app.config import settings
@@ -23,7 +24,9 @@ router = APIRouter()
 
 
 @router.post("", response_model=VenvPublicWithJournal)
-async def create_venv(*, session: SessionDep, venv: VenvCreate):
+async def create_venv(
+    *, session: SessionDep, background_tasks: BackgroundTasks, venv: VenvCreate
+):
     statement = select(Venv).where(Venv.name == venv.name)
     db_venv = session.exec(statement).first()
     if db_venv:
@@ -36,24 +39,21 @@ async def create_venv(*, session: SessionDep, venv: VenvCreate):
     db_journal_id = utils.create_journal(
         session=session, journal=(JournalCreate(unit_id=db_venv.id))
     )
-    try:
-        subprocess.run(
-            [
-                "python",
-                "-m",
-                "venv",
-                "--upgrade-deps",
-                f"{settings.venv_dir}/{db_venv.id}",
-            ],
-            capture_output=True,
-            check=True,
-            text=True,
-        )
-    except subprocess.CalledProcessError as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"The subprocess module encountered an error :\n{e.stderr}",
-        )
+    background_tasks.add_task(
+        utils.run_ansible_playbook,
+        session=session,
+        playbook="app/playbooks/venv.yml",
+        options={
+            "extra_vars": {
+                "venv_directory": str(
+                    Path(settings.venv_dir).resolve() / str(db_venv.id)
+                ),
+            },
+            "inventory": "localhost,",
+            "tags": "create",
+        },
+        journal_id=db_journal_id,
+    )
     session.commit()
     session.refresh(db_venv)
     db_venv_journal = VenvPublicWithJournal(
