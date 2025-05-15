@@ -12,3 +12,9 @@
         -m venv
         --upgrade-deps {{ venv_directory }}
       tags: create
+
+    - name: installing venv
+      ansible.builtin.pip:
+        name: "{{ venv_package }}"
+        virtualenv: "{{ venv_directory }}"
+      tags: install
