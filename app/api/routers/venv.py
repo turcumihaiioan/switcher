@@ -140,7 +140,9 @@ def delete_venv(session: SessionDep, venv_id: uuid.UUID):
 
 
 @router.post("/{venv_id}/install")
-def install_venv_by_id(*, session: SessionDep, venv_id: uuid.UUID):
+def install_venv_by_id(
+    *, session: SessionDep, background_tasks: BackgroundTasks, venv_id: uuid.UUID
+):
     db_venv = session.get(Venv, venv_id)
     if not db_venv:
         raise HTTPException(
@@ -160,26 +162,26 @@ def install_venv_by_id(*, session: SessionDep, venv_id: uuid.UUID):
             db_venv_packages.append(f"{item.name}=={item.version}")
         else:
             db_venv_packages.append(f"{item.name}")
-    try:
-        subprocess.run(
-            [
-                f"{settings.venv_dir}/{db_venv.id}/bin/python",
-                "-m",
-                "pip",
-                "install",
-                "--no-cache-dir",
-            ]
-            + db_venv_packages,
-            capture_output=True,
-            check=True,
-            text=True,
-        )
-    except subprocess.CalledProcessError as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"The subprocess module encountered an error :\n{e.stderr}",
-        )
-    return {"ok": True}
+    db_journal_id = utils.create_journal(
+        session=session, journal=(JournalCreate(unit_id=db_venv.id))
+    )
+    background_tasks.add_task(
+        utils.run_ansible_playbook,
+        session=session,
+        playbook="app/playbooks/venv.yml",
+        options={
+            "extra_vars": {
+                "venv_directory": str(
+                    Path(settings.venv_dir).resolve() / str(db_venv.id)
+                ),
+                "venv_package": db_venv_packages,
+            },
+            "inventory": "localhost,",
+            "tags": "install",
+        },
+        journal_id=db_journal_id,
+    )
+    return {"ok": True, "journal_id": db_journal_id}
 
 
 @router.post("/{venv_id}/uninstall")
