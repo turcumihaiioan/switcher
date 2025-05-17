@@ -13,6 +13,14 @@
         --upgrade-deps {{ venv_directory }}
       tags: create
 
+    - name: uninstalling venv
+      ansible.builtin.shell: >
+        {{ ansible_python_interpreter }}
+        -m venv
+        --clear
+        --upgrade-deps {{ venv_directory }}
+      tags: uninstall
+
     - name: installing venv
       ansible.builtin.pip:
         name: "{{ venv_package }}"
