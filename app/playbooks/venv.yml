@@ -1,27 +1,31 @@
 ---
-- name: venv playbook
+- name: Play for venv
   connection: local
   gather_facts: false
   hosts: localhost
   vars:
     ansible_python_interpreter: "{{ ansible_playbook_python }}"
   tasks:
-    - name: creating venv
+    - name: Creating venv
       ansible.builtin.shell: >
         {{ ansible_python_interpreter }}
         -m venv
-        --upgrade-deps {{ venv_directory }}
+        --upgrade-deps
+        {{ venv_directory }}
+      changed_when: true
       tags: create
 
-    - name: uninstalling venv
+    - name: Uninstalling venv
       ansible.builtin.shell: >
         {{ ansible_python_interpreter }}
         -m venv
         --clear
-        --upgrade-deps {{ venv_directory }}
+        --upgrade-deps
+        {{ venv_directory }}
+      changed_when: true
       tags: uninstall
 
-    - name: installing venv
+    - name: Installing venv
       ansible.builtin.pip:
         name: "{{ venv_package }}"
         virtualenv: "{{ venv_directory }}"
