@@ -30,3 +30,9 @@
         name: "{{ venv_package }}"
         virtualenv: "{{ venv_directory }}"
       tags: install
+
+    - name: Deleting venv
+      ansible.builtin.file:
+        path: "{{ venv_directory }}"
+        state: absent
+      tags: delete
