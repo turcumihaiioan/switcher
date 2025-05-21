@@ -1,4 +1,3 @@
-import subprocess
 import uuid
 from pathlib import Path
 
@@ -24,7 +23,7 @@ router = APIRouter()
 
 
 @router.post("", response_model=VenvPublicWithJournal)
-async def create_venv(
+def create_venv(
     *, session: SessionDep, background_tasks: BackgroundTasks, venv: VenvCreate
 ):
     statement = select(Venv).where(Venv.name == venv.name)
@@ -97,7 +96,9 @@ def update_venv(*, session: SessionDep, venv_id: uuid.UUID, venv: VenvUpdate):
 
 
 @router.delete("/{venv_id}")
-def delete_venv(session: SessionDep, venv_id: uuid.UUID):
+def delete_venv(
+    *, session: SessionDep, background_tasks: BackgroundTasks, venv_id: uuid.UUID
+):
     db_venv = session.get(Venv, venv_id)
     if not db_venv:
         raise HTTPException(
@@ -123,20 +124,26 @@ def delete_venv(session: SessionDep, venv_id: uuid.UUID):
             detail=links_repositories_detail,
         )
     session.delete(db_venv)
-    try:
-        subprocess.run(
-            ["rm", "--force", "--recursive", f"{settings.venv_dir}/{db_venv.id}"],
-            capture_output=True,
-            check=True,
-            text=True,
-        )
-    except subprocess.CalledProcessError as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"The subprocess module encountered an error :\n{e.stderr}",
-        )
+    db_journal_id = utils.create_journal(
+        session=session, journal=(JournalCreate(unit_id=db_venv.id))
+    )
+    background_tasks.add_task(
+        utils.run_ansible_playbook,
+        session=session,
+        playbook="app/playbooks/venv.yml",
+        options={
+            "extra_vars": {
+                "venv_directory": str(
+                    Path(settings.venv_dir).resolve() / str(db_venv.id)
+                ),
+            },
+            "inventory": "localhost,",
+            "tags": "delete",
+        },
+        journal_id=db_journal_id,
+    )
     session.commit()
-    return {"ok": True}
+    return {"ok": True, "journal_id": db_journal_id}
 
 
 @router.post("/{venv_id}/install")
