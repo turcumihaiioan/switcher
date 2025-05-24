@@ -35,11 +35,15 @@ def create_journal_message(
 def run_ansible_playbook(
     *,
     session=Session,
+    venv_directory: str | None = None,
     playbook: str,
     options: dict,
     journal_id: uuid.UUID,
 ) -> None:
-    command = ["ansible-playbook"]
+    if venv_directory is not None:
+        command = [f"{venv_directory}/bin/ansible-playbook"]
+    else:
+        command = ["ansible-playbook"]
     for key, value in options.items():
         if key == "extra_vars":
             command.extend(["--extra-vars", json.dumps(value)])
