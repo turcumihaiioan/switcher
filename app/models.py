@@ -221,9 +221,7 @@ class VenvPublicWithLinks(VenvPublic):
     repositories: list["RepositoryPublic"] = []
 
 
-class VenvPublicWithJournal(SQLModel):
-    name: str
-    id: uuid.UUID
+class VenvPublicWithJournal(VenvPublic):
     journal_id: uuid.UUID
 
 
