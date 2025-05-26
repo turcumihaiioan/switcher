@@ -147,6 +147,10 @@ class RepositoryPublicWithLinks(RepositoryPublic):
     venv_id: uuid.UUID
 
 
+class RepositoryPublicWithJournal(RepositoryPublic):
+    journal_id: uuid.UUID
+
+
 # credential
 class CredentialBase(SQLModel):
     name: str = Field(index=True, max_length=128, min_length=1, unique=True)
