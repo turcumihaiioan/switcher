@@ -1,27 +1,35 @@
-import os
 import subprocess
 import uuid
+from pathlib import Path
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, BackgroundTasks, HTTPException
 from sqlmodel import select
 
 from app.config import settings
 from app.database import SessionDep
 from app.models import (
+    JournalCreate,
     Repository,
     RepositoryCreate,
     RepositoryPublic,
+    RepositoryPublicWithJournal,
     RepositoryPublicWithLinks,
     RepositoryUpdate,
     Venv,
     Venv_Package,
 )
+from app import utils
 
 router = APIRouter()
 
 
-@router.post("", response_model=RepositoryPublic)
-def create_repository(*, session: SessionDep, repository: RepositoryCreate):
+@router.post("", response_model=RepositoryPublicWithJournal)
+def create_repository(
+    *,
+    session: SessionDep,
+    background_tasks: BackgroundTasks,
+    repository: RepositoryCreate,
+):
     statement = select(Repository).where(Repository.name == repository.name)
     db_repository = session.exec(statement).first()
     if db_repository:
@@ -37,16 +45,34 @@ def create_repository(*, session: SessionDep, repository: RepositoryCreate):
         )
     db_repository = Repository.model_validate(repository)
     session.add(db_repository)
-    try:
-        os.makedirs(f"{settings.repository_dir}/{db_repository.id}")
-    except OSError as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"The os module encountered an error :\n{e.strerror}",
-        )
+    db_journal_id = utils.create_journal(
+        session=session, journal=(JournalCreate(unit_id=db_repository.id))
+    )
+    background_tasks.add_task(
+        utils.run_ansible_playbook,
+        session=session,
+        playbook="app/playbooks/repository.yml",
+        options={
+            "extra_vars": {
+                "repository_directory": str(
+                    Path(settings.repository_dir).resolve() / str(db_venv.id)
+                ),
+            },
+            "inventory": "localhost,",
+            "tags": "create",
+        },
+        journal_id=db_journal_id,
+        venv_directory=str(Path(settings.venv_dir) / str(db_repository.venv_id)),
+    )
     session.commit()
     session.refresh(db_repository)
-    return db_repository
+    db_repository_journal = RepositoryPublicWithJournal(
+        name=db_repository.name,
+        url=db_repository.url,
+        id=db_repository.id,
+        journal_id=db_journal_id,
+    )
+    return db_repository_journal
 
 
 @router.get("", response_model=list[RepositoryPublic])
