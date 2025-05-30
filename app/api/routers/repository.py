@@ -51,18 +51,18 @@ def create_repository(
     background_tasks.add_task(
         utils.run_ansible_playbook,
         session=session,
+        venv_directory=str(Path(settings.venv_dir) / str(db_repository.venv_id)),
         playbook="app/playbooks/repository.yml",
         options={
             "extra_vars": {
                 "repository_directory": str(
-                    Path(settings.repository_dir).resolve() / str(db_venv.id)
+                    Path(settings.repository_dir).resolve() / str(db_repository.id)
                 ),
             },
             "inventory": "localhost,",
             "tags": "create",
         },
         journal_id=db_journal_id,
-        venv_directory=str(Path(settings.venv_dir) / str(db_repository.venv_id)),
     )
     session.commit()
     session.refresh(db_repository)
@@ -129,7 +129,9 @@ def update_repository(
 
 
 @router.delete("/{repository_id}")
-def delete_repository(session: SessionDep, repository_id: uuid.UUID):
+def delete_repository(
+    *, session: SessionDep, background_tasks: BackgroundTasks, repository_id: uuid.UUID
+):
     db_repository = session.get(Repository, repository_id)
     if not db_repository:
         raise HTTPException(
@@ -137,25 +139,33 @@ def delete_repository(session: SessionDep, repository_id: uuid.UUID):
             detail="The repository with this id does not exist in the system",
         )
     session.delete(db_repository)
-    try:
-        subprocess.run(
-            [
-                "rm",
-                "--force",
-                "--recursive",
-                f"{settings.repository_dir}/{db_repository.id}",
-            ],
-            capture_output=True,
-            check=True,
-            text=True,
-        )
-    except subprocess.CalledProcessError as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"The subprocess module encountered an error :\n{e.stderr}",
-        )
+    db_journal_id = utils.create_journal(
+        session=session, journal=(JournalCreate(unit_id=db_repository.id))
+    )
+    background_tasks.add_task(
+        utils.run_ansible_playbook,
+        session=session,
+        venv_directory=str(Path(settings.venv_dir) / str(db_repository.venv_id)),
+        playbook="app/playbooks/repository.yml",
+        options={
+            "extra_vars": {
+                "repository_directory": str(
+                    Path(settings.repository_dir).resolve() / str(db_repository.id)
+                ),
+            },
+            "inventory": "localhost,",
+            "tags": "delete",
+        },
+        journal_id=db_journal_id,
+    )
     session.commit()
-    return {"ok": True}
+    db_repository_journal = RepositoryPublicWithJournal(
+        name=db_repository.name,
+        url=db_repository.url,
+        id=db_repository.id,
+        journal_id=db_journal_id,
+    )
+    return db_repository_journal
 
 
 @router.post("/{repository_id}/install")
