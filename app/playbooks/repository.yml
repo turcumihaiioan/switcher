@@ -13,6 +13,12 @@
         state: directory
       tags: create
 
+    - name: Installing repository
+      ansible.builtin.git:
+        dest: "{{ repository_directory }}"
+        repo: "{{ repository_url }}"
+      tags: install
+
     - name: Deleting repository
       ansible.builtin.file:
         path: "{{ repository_directory }}"
