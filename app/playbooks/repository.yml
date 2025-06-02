@@ -13,6 +13,16 @@
         state: directory
       tags: create
 
+    - name: Uninstalling repository
+      ansible.builtin.shell: >
+        find
+        {{ repository_directory }}
+        -mindepth
+        1
+        -delete
+      changed_when: true
+      tags: uninstall
+
     - name: Installing repository
       ansible.builtin.git:
         dest: "{{ repository_directory }}"
