@@ -42,6 +42,20 @@ def create_repository(
             status_code=400,
             detail="The venv with this id(venv_id) does not exist in the system",
         )
+    statement = select(Venv_Package.name).where(
+        Venv_Package.venv_id == repository.venv_id
+    )
+    db_venv_packages = session.exec(statement).all()
+    if len(db_venv_packages) == 0:
+        raise HTTPException(
+            status_code=404,
+            detail="The linked venv does not have any packages",
+        )
+    if "ansible" not in db_venv_packages:
+        raise HTTPException(
+            status_code=404,
+            detail="The linked venv does not have the ansible package",
+        )
     db_repository = Repository.model_validate(repository)
     session.add(db_repository)
     db_journal_id = utils.create_journal(
@@ -137,6 +151,20 @@ def delete_repository(
             status_code=404,
             detail="The repository with this id does not exist in the system",
         )
+    statement = select(Venv_Package.name).where(
+        Venv_Package.venv_id == db_repository.venv_id
+    )
+    db_venv_packages = session.exec(statement).all()
+    if len(db_venv_packages) == 0:
+        raise HTTPException(
+            status_code=404,
+            detail="The linked venv does not have any packages",
+        )
+    if "ansible" not in db_venv_packages:
+        raise HTTPException(
+            status_code=404,
+            detail="The linked venv does not have the ansible package",
+        )
     session.delete(db_repository)
     db_journal_id = utils.create_journal(
         session=session, journal=(JournalCreate(unit_id=db_repository.id))
@@ -223,6 +251,20 @@ def uninstall_repository_by_id(
         raise HTTPException(
             status_code=404,
             detail="The repository with this id does not exist in the system",
+        )
+    statement = select(Venv_Package.name).where(
+        Venv_Package.venv_id == db_repository.venv_id
+    )
+    db_venv_packages = session.exec(statement).all()
+    if len(db_venv_packages) == 0:
+        raise HTTPException(
+            status_code=404,
+            detail="The linked venv does not have any packages",
+        )
+    if "ansible" not in db_venv_packages:
+        raise HTTPException(
+            status_code=404,
+            detail="The linked venv does not have the ansible package",
         )
     db_journal_id = utils.create_journal(
         session=session, journal=(JournalCreate(unit_id=db_repository.id))
