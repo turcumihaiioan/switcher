@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import Enum
 import uuid
 
 from sqlmodel import Field, Relationship, SQLModel, UniqueConstraint
@@ -71,8 +72,19 @@ class UserPublicWithGroups(UserPublic):
 
 
 # journal
+class ActiveEnum(str, Enum):
+    activating = "activating"
+    active = "active"
+    deactivating = "deactivating"
+    failed = "failed"
+    inactive = "inactive"
+    maintenance = "maintenance"
+    reloading = "reloading"
+
+
 class JournalBase(SQLModel):
     unit_id: uuid.UUID = Field(nullable=False)
+    active: ActiveEnum = Field(default=ActiveEnum.inactive)
 
 
 class Journal(JournalBase, table=True):
