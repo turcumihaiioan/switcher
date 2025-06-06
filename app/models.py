@@ -2,7 +2,9 @@ from datetime import datetime
 from enum import Enum
 import uuid
 
-from sqlmodel import Field, Relationship, SQLModel, UniqueConstraint
+from sqlmodel import Field, Relationship, SQLModel, UniqueConstraint, CheckConstraint
+
+from app.config import settings
 
 
 # group and user link
@@ -88,6 +90,12 @@ class JournalBase(SQLModel):
 
 
 class Journal(JournalBase, table=True):
+    if settings.database_type == "sqlite":
+        __table_args__ = (
+            CheckConstraint(
+                "active IN ('activating', 'active', 'deactivating', 'failed', 'inactive', 'maintenance', 'reloading')"
+            ),
+        )
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     messages: list["Journal_Message"] = Relationship(
         back_populates="journal", cascade_delete=True
