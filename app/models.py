@@ -106,6 +106,10 @@ class JournalCreate(JournalBase):
     pass
 
 
+class JournalUpdate(SQLModel):
+    active: ActiveEnum
+
+
 class JournalPublic(JournalBase):
     id: uuid.UUID
 
