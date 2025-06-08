@@ -6,6 +6,7 @@ from sqlmodel import Session
 from app.models import (
     Journal,
     JournalCreate,
+    JournalUpdate,
     Journal_Message,
     Journal_MessageCreate,
 )
@@ -17,6 +18,17 @@ def create_journal(*, session: Session, journal: JournalCreate) -> uuid.UUID:
     session.commit()
     session.refresh(db_journal)
     return db_journal.id
+
+
+def update_journal(
+    *, session: Session, journal_id: uuid.UUID, journal: JournalUpdate
+) -> None:
+    db_journal = session.get(Journal, journal_id)
+    journal_data = journal.model_dump(exclude_unset=True)
+    for key, value in journal_data.items():
+        setattr(db_journal, key, value)
+    session.add(db_journal)
+    session.commit()
 
 
 def create_journal_message(
