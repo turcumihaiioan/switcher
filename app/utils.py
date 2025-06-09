@@ -52,6 +52,11 @@ def run_ansible_playbook(
     options: dict,
     journal_id: uuid.UUID,
 ) -> None:
+    update_journal(
+        session=session,
+        journal_id=journal_id,
+        journal=(JournalUpdate(active="activating")),
+    )
     if venv_directory is not None:
         command = [f"{venv_directory}/bin/ansible-playbook"]
     else:
