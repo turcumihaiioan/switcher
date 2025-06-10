@@ -69,6 +69,11 @@ def run_ansible_playbook(
         if key == "tags":
             command.extend(["--tags", value])
     command.append(playbook)
+    update_journal(
+        session=session,
+        journal_id=journal_id,
+        journal=(JournalUpdate(active="active")),
+    )
     try:
         process = subprocess.Popen(
             command,
