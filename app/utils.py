@@ -83,6 +83,11 @@ def run_ansible_playbook(
             bufsize=1,
         )
     except Exception as e:
+        update_journal(
+            session=session,
+            journal_id=journal_id,
+            journal=(JournalUpdate(active="failed")),
+        )
         print(f"The run_ansible_playbook subprocess module encountered an error:\n{e}")
         return
     if process.stdout is not None:
