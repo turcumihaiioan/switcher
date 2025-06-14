@@ -90,7 +90,7 @@ def run_ansible_playbook(
             journal_id=journal_id,
             journal=(JournalUpdate(active="failed")),
         )
-        logger.info(f"The run_ansible_playbook subprocess module encountered an error:\n{e}")
+        logger.error(f"The run_ansible_playbook subprocess module encountered an error:\n{e}")
         return
     if process.stdout is not None:
         for line in iter(process.stdout.readline, ""):
@@ -104,7 +104,7 @@ def run_ansible_playbook(
                     ),
                 )
             except Exception as e:
-                logger.info(f"The create_journal_message function encountered an error:\n{e}")
+                logger.error(f"The create_journal_message function encountered an error:\n{e}")
                 return
         process.stdout.close()
     return_code = process.wait()
