@@ -104,6 +104,11 @@ def run_ansible_playbook(
                     ),
                 )
             except Exception as e:
+                update_journal(
+                    session=session,
+                    journal_id=journal_id,
+                    journal=(JournalUpdate(active="failed")),
+                )
                 logger.error(f"The create_journal_message function encountered an error:\n{e}")
                 return
         process.stdout.close()
