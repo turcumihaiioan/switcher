@@ -113,6 +113,7 @@ def run_ansible_playbook(
                 return
         process.stdout.close()
     return_code = process.wait()
-    logger.info(
-        f"The run_ansible_playbook subprocess module finished with return code: {return_code}"
-    )
+    if return_code != 0:
+        logger.error(
+            f"The run_ansible_playbook subprocess module finished with return code: {return_code}"
+        )
