@@ -14,6 +14,7 @@ from app.models import (
 
 logger = logging.getLogger("uvicorn")
 
+
 def create_journal(*, session: Session, journal: JournalCreate) -> uuid.UUID:
     db_journal = Journal.model_validate(journal)
     session.add(db_journal)
@@ -90,7 +91,9 @@ def run_ansible_playbook(
             journal_id=journal_id,
             journal=(JournalUpdate(active="failed")),
         )
-        logger.error(f"The run_ansible_playbook subprocess module encountered an error:\n{e}")
+        logger.error(
+            f"The run_ansible_playbook subprocess module encountered an error:\n{e}"
+        )
         return
     if process.stdout is not None:
         for line in iter(process.stdout.readline, ""):
@@ -109,11 +112,14 @@ def run_ansible_playbook(
                     journal_id=journal_id,
                     journal=(JournalUpdate(active="failed")),
                 )
-                logger.error(f"The create_journal_message function encountered an error:\n{e}")
+                logger.error(
+                    f"The create_journal_message function encountered an error:\n{e}"
+                )
                 return
         process.stdout.close()
     return_code = process.wait()
-    if return_code != 0:
-        logger.error(
-            f"The run_ansible_playbook subprocess module finished with return code: {return_code}"
-        )
+    update_journal(
+        session=session,
+        journal_id=journal_id,
+        journal=(JournalUpdate(active="inactive" if return_code == 0 else "failed")),
+    )
