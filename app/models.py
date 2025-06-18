@@ -142,6 +142,7 @@ class Journal_MessagePublic(Journal_MessageBase):
 # repository
 class RepositoryBase(SQLModel):
     name: str = Field(index=True, max_length=128, min_length=1, unique=True)
+    ref: str | None = Field(default=None, max_length=64, min_length=1)
     url: str = Field(index=True, max_length=128, min_length=1)
 
 
