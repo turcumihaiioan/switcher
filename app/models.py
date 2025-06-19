@@ -160,6 +160,7 @@ class RepositoryCreate(RepositoryBase):
 
 class RepositoryUpdate(SQLModel):
     name: str | None = Field(default=None, max_length=128, min_length=1, unique=True)
+    ref: str | None = Field(default=None, max_length=64, min_length=1)
     url: str | None = Field(default=None, max_length=128, min_length=1)
     venv_id: uuid.UUID | None = Field(default=None)
 
