@@ -27,6 +27,7 @@
       ansible.builtin.git:
         dest: "{{ repository_directory }}"
         repo: "{{ repository_url }}"
+        version: "{{ repository_ref | default(omit) }}"
       tags: install
 
     - name: Deleting repository
