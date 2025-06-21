@@ -233,6 +233,11 @@ def install_repository_by_id(
                     Path(settings.repository_dir).resolve() / str(db_repository.id)
                 ),
                 "repository_url": str(db_repository.url),
+                **(
+                    {"repository_ref": str(db_repository.ref)}
+                    if db_repository.ref is not None
+                    else {}
+                ),
             },
             "inventory": "localhost,",
             "tags": "install",
