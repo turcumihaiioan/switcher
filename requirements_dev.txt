@@ -2,3 +2,4 @@
 ansible-lint
 mypy
 ruff
+types-passlib
