@@ -45,6 +45,7 @@ class Settings(BaseSettings):
             return f"sqlite:///{self.db_dir}/{self.database_file}"
         raise ValueError(f"Unsupported DATABASE_TYPE: {self.database_type}")
 
+    secret_key: str = ""
 
 settings = Settings()
 
