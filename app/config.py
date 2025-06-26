@@ -1,7 +1,10 @@
+import base64
+import binascii
 import os
 
-from pydantic import computed_field
+from pydantic import computed_field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from typing_extensions import Self
 
 
 class Settings(BaseSettings):
@@ -46,6 +49,19 @@ class Settings(BaseSettings):
         raise ValueError(f"Unsupported DATABASE_TYPE: {self.database_type}")
 
     secret_key: str = ""
+
+    @model_validator(mode="after")
+    def _verify_secret_key(self) -> Self:
+        try:
+            key = base64.urlsafe_b64decode(self.secret_key)
+        except binascii.Error as exc:
+            raise ValueError(
+                "SECRET_KEY must be 64 url-safe base64-encoded bytes."
+            ) from exc
+        if len(key) != 64:
+            raise ValueError("SECRET_KEY must be 64 url-safe base64-encoded bytes.")
+        return self
+
 
 settings = Settings()
 
