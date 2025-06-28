@@ -13,6 +13,12 @@
 ```bash
 podman build --tag switcher .
 ```
+
+### Generate a secret_key using Python and store it in your .env
+```bash
+python -c "import base64; import os; print(base64.urlsafe_b64encode(os.urandom(64)).decode())"
+```
+
 ### Run the container
 
 ```bash
