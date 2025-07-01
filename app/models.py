@@ -52,7 +52,7 @@ class UserBase(SQLModel):
 
 class User(UserBase, table=True):
     groups: list[Group] = Relationship(back_populates="users", link_model=Group_User)
-    id: int | None = Field(default=None, primary_key=True)
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
 
 
 class UserCreate(UserBase):
