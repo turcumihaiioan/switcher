@@ -66,7 +66,7 @@ class UserUpdate(SQLModel):
 
 
 class UserPublic(UserBase):
-    id: int
+    id: uuid.UUID
 
 
 class UserPublicWithGroups(UserPublic):
