@@ -1,3 +1,5 @@
+import uuid
+
 from fastapi import APIRouter, HTTPException
 from sqlmodel import col, select
 
@@ -37,7 +39,7 @@ def read_user(*, session: SessionDep):
 
 
 @router.get("/{user_id}", response_model=UserPublicWithGroups)
-def read_user_by_id(*, session: SessionDep, user_id: int):
+def read_user_by_id(*, session: SessionDep, user_id: uuid.UUID):
     db_user = session.get(User, user_id)
     if not db_user:
         raise HTTPException(
@@ -48,7 +50,7 @@ def read_user_by_id(*, session: SessionDep, user_id: int):
 
 
 @router.patch("/{user_id}", response_model=UserPublic)
-def update_user(*, session: SessionDep, user_id: int, user: UserUpdate):
+def update_user(*, session: SessionDep, user_id: uuid.UUID, user: UserUpdate):
     db_user = session.get(User, user_id)
     if not db_user:
         raise HTTPException(
@@ -89,7 +91,7 @@ def update_user(*, session: SessionDep, user_id: int, user: UserUpdate):
 
 
 @router.delete("/{user_id}")
-def delete_user(session: SessionDep, user_id: int):
+def delete_user(session: SessionDep, user_id: uuid.UUID):
     db_user = session.get(User, user_id)
     if not db_user:
         raise HTTPException(
