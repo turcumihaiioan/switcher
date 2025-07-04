@@ -53,6 +53,7 @@ class UserBase(SQLModel):
 class User(UserBase, table=True):
     groups: list[Group] = Relationship(back_populates="users", link_model=Group_User)
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    password: str
 
 
 class UserCreate(UserBase):
