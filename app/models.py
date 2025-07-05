@@ -57,13 +57,14 @@ class User(UserBase, table=True):
 
 
 class UserCreate(UserBase):
-    pass
+    password: str = Field(max_length=64, min_length=8)
 
 
 class UserUpdate(SQLModel):
     groups: list[int] = []
     is_active: bool = True
     name: str | None = Field(default=None, max_length=128, min_length=1)
+    password: str | None = Field(default=None, max_length=64, min_length=8)
 
 
 class UserPublic(UserBase):
