@@ -12,6 +12,7 @@ from app.models import (
     UserPublicWithGroups,
     UserUpdate,
 )
+from app.security import get_password_hash
 
 router = APIRouter()
 
@@ -25,7 +26,9 @@ def create_user(*, session: SessionDep, user: UserCreate):
             status_code=400,
             detail="The user with this username already exists in the system",
         )
-    db_user = User.model_validate(user)
+    db_user = User.model_validate(
+        user, update={"password": get_password_hash(user.password)}
+    )
     session.add(db_user)
     session.commit()
     session.refresh(db_user)
