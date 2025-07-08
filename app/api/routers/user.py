@@ -12,7 +12,7 @@ from app.models import (
     UserPublicWithGroups,
     UserUpdate,
 )
-from app.security import get_password_hash
+from app.security import get_password_hash, verify_password
 
 router = APIRouter()
 
@@ -84,6 +84,14 @@ def update_user(*, session: SessionDep, user_id: uuid.UUID, user: UserUpdate):
                     detail=missing_db_groups_detail,
                 )
             setattr(db_user, key, db_groups)
+        elif key == "password":
+            similar_password = verify_password(value, db_user.password)
+            if similar_password:
+                raise HTTPException(
+                    status_code=400,
+                    detail="BAD PASSWORD: is too similar to the old one",
+                )
+            setattr(db_user, key, get_password_hash(value))
         else:
             setattr(db_user, key, value)
 
