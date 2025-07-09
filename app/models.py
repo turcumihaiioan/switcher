@@ -75,6 +75,12 @@ class UserPublicWithGroups(UserPublic):
     groups: list[GroupPublic] = []
 
 
+# token
+class Token(SQLModel):
+    access_token: str
+    token_type: str = "bearer"
+
+
 # journal
 class ActiveEnum(str, Enum):
     activating = "activating"
