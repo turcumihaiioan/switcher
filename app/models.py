@@ -81,6 +81,10 @@ class Token(SQLModel):
     token_type: str = "bearer"
 
 
+class TokenData(SQLModel):
+    user_id: str | None = None
+
+
 # journal
 class ActiveEnum(str, Enum):
     activating = "activating"
