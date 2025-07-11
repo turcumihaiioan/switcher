@@ -62,6 +62,8 @@ class Settings(BaseSettings):
             raise ValueError("SECRET_KEY must be 64 url-safe base64-encoded bytes.")
         return self
 
+    token_expire_minutes: int = 60
+
 
 settings = Settings()
 
