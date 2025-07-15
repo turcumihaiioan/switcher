@@ -12,7 +12,7 @@ from app.models import (
     UserPublicWithGroups,
     UserUpdate,
 )
-from app.security import get_password_hash, verify_password
+from app.security import create_password_hash, verify_password
 
 router = APIRouter()
 
@@ -27,7 +27,7 @@ def create_user(*, session: SessionDep, user: UserCreate):
             detail="The user with this username already exists in the system",
         )
     db_user = User.model_validate(
-        user, update={"password": get_password_hash(user.password)}
+        user, update={"password": create_password_hash(user.password)}
     )
     session.add(db_user)
     session.commit()
@@ -91,7 +91,7 @@ def update_user(*, session: SessionDep, user_id: uuid.UUID, user: UserUpdate):
                     status_code=400,
                     detail="BAD PASSWORD: is too similar to the old one",
                 )
-            setattr(db_user, key, get_password_hash(value))
+            setattr(db_user, key, create_password_hash(value))
         else:
             setattr(db_user, key, value)
 
