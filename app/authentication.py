@@ -29,4 +29,8 @@ def get_user(session: SessionDep, token: TokenDep) -> User:
             headers={"WWW-Authenticate": "Bearer"},
         )
     db_user = session.get(User, uuid.UUID(token_data.user_id))
+    if not db_user:
+        raise HTTPException(status_code=404, detail="Incorrect user")
+    elif not db_user.is_active:
+        raise HTTPException(status_code=400, detail="Inactive user")
     return db_user
