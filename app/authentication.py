@@ -34,3 +34,6 @@ def get_user(session: SessionDep, token: TokenDep) -> User:
     elif not db_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     return db_user
+
+
+UserDep = Annotated[User, Depends(get_user)]
