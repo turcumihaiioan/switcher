@@ -8,7 +8,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from app.config import settings
 from app.database import SessionDep
 from app.models import User, Token
-from app.security import create_token
+from app.security import create_token, verify_password
 
 router = APIRouter()
 
@@ -23,6 +23,8 @@ def create_access_token(
         raise HTTPException(status_code=400, detail="Incorrect username or password")
     elif not db_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
+    elif not verify_password(form_data.password, db_user.password):
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
     token_expires = timedelta(settings.token_expire_minutes)
     token = create_token(data={"user_id": str(db_user.id)}, expires_delta=token_expires)
     return Token(access_token=token)
