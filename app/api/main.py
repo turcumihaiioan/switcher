@@ -1,8 +1,10 @@
 from fastapi import APIRouter
 
 from app.config import settings
+from app.authentication import UserDep
 
 from app.api.routers import (
+    auth,
     user,
     group,
     repository,
@@ -23,6 +25,7 @@ async def info():
     }
 
 
+router.include_router(auth.router, prefix="/auth", tags=["auth"])
 router.include_router(user.router, prefix="/user", tags=["user"])
 router.include_router(group.router, prefix="/group", tags=["group"])
 router.include_router(repository.router, prefix="/repository", tags=["repository"])
