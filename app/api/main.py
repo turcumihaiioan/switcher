@@ -19,7 +19,7 @@ router = APIRouter()
 
 
 @router.get("/info")
-async def info():
+async def info(current_user: UserDep):
     return {
         "settings": settings,
     }
